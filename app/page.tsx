@@ -62,7 +62,7 @@ function HeroPlayButton() {
     <>
       <audio
         ref={audioRef}
-        src="/demos/auburn-sports-today.mp3"
+        src="https://voice123.com/samples/Voice123%20-%20Trailers%20-%20Mark%20Aston.mp3"
         onEnded={() => setPlaying(false)}
         preload="none"
       />
