@@ -6,6 +6,7 @@ import { Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AudioPlayer from "@/components/AudioPlayer";
+import VideoShowcase from "@/components/VideoShowcase";
 
 export default function DemosPage() {
   return (
@@ -60,9 +61,8 @@ export default function DemosPage() {
                 className="text-base leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Five demo categories covering the full range of Mark&apos;s
-                work — commercial, narration, character, animation, and
-                broadcast imaging. Demo files are being added shortly.
+                Audio demos across commercial, promo, imaging, and trailer
+                work — plus video reels from real broadcast productions.
               </motion.p>
             </div>
           </div>
@@ -77,6 +77,47 @@ export default function DemosPage() {
               transition={{ duration: 0.6, delay: 0.15 }}
             >
               <AudioPlayer />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Video Showcase */}
+        <section
+          className="py-20 sm:py-28"
+          style={{
+            background: "var(--bg-surface)",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="mb-12">
+              <motion.p
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3"
+                style={{ color: "var(--purple-light)" }}
+              >
+                Broadcast Work
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                See the work in action
+              </motion.h2>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <VideoShowcase />
             </motion.div>
           </div>
         </section>
@@ -107,21 +148,21 @@ export default function DemosPage() {
                 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                Need samples now?
+                Ready to work together?
               </h2>
               <p
                 className="text-base leading-relaxed max-w-md mb-8"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Demo files are coming soon. Contact Mark directly for immediate
-                samples tailored to your project.
+                Union quality, fast turnaround. Mark typically delivers within
+                the hour. Get in touch to start your project.
               </p>
               <Link
                 href="/contact"
                 className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
                 style={{ background: "var(--purple)" }}
               >
-                Request Immediate Samples
+                Book a Session
               </Link>
             </motion.div>
           </div>
