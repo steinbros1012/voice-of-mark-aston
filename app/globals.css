@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+:root {
+  --purple: #9361CA;
+  --purple-light: #C47ED6;
+  --purple-dark: #6B3FA0;
+  --purple-glow: rgba(147, 97, 202, 0.18);
+  --bg-base: #0B0910;
+  --bg-surface: #100D18;
+  --bg-card: #181324;
+  --border: rgba(147, 97, 202, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --text: #EDE9F5;
+  --text-secondary: #9B91B2;
+  --text-muted: #635A7A;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -7,10 +22,49 @@ html {
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #111111;
+  background-color: var(--bg-base);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Sound bar equalizer animation */
+@keyframes soundBar {
+  0%, 100% { transform: scaleY(0.08); }
+  50%       { transform: scaleY(1); }
+}
+
+/* Play button pulse ring */
+@keyframes pulseRing {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Subtle float */
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Text shimmer for special labels */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--purple-light) 0%,
+    #e8bff5 45%,
+    var(--purple-light) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
 }
 
 ::selection {
-  background-color: rgba(26, 58, 92, 0.12);
+  background-color: rgba(147, 97, 202, 0.22);
 }

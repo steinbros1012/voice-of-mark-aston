@@ -3,18 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { Mic, Radio, Film, ChevronRight } from "lucide-react";
+import { ArrowRight, Mic, Radio, Film } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const qualities = [
-  "Powerful",
-  "Bold",
-  "Versatile",
-  "Hypnotic",
-  "Uplifting",
-  "Distinctive",
-];
+import SoundBars from "@/components/SoundBars";
+import AudioPlayer from "@/components/AudioPlayer";
 
 const clients = [
   "CBS",
@@ -33,27 +26,37 @@ const services = [
     title: "Commercial & Broadcast",
     description:
       "TV and radio spots, network promos, and imaging for the brands people actually know.",
+    tags: ["TV Spot", "Radio", "Imaging", "Promo"],
   },
   {
     icon: Mic,
     title: "Narration & Documentary",
     description:
-      "Corporate narration, documentary voice work, e-learning, and audiobooks delivered with clarity and depth.",
+      "Corporate narration, documentary, e-learning, and audiobooks.",
+    tags: ["Documentary", "Corporate", "E-Learning", "Audiobook"],
   },
   {
     icon: Film,
     title: "Character & Animation",
     description:
-      "From animation and video games to theme park attractions — dynamic characters brought to life with range and precision.",
+      "Animation and video games to theme park attractions, dynamic characters.",
+    tags: ["Animation", "Video Game", "Theme Park"],
   },
 ];
 
+const stats = [
+  { value: "20+", label: "Years experience" },
+  { value: "SAG", label: "AFTRA union member" },
+  { value: "24hr", label: "Standard turnaround" },
+  { value: "100+", label: "Brands served" },
+];
+
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: "easeOut" as const },
+    transition: { delay: i * 0.09, duration: 0.55, ease: "easeOut" },
   }),
 };
 
@@ -62,77 +65,152 @@ export default function HomePage() {
     <>
       <Navbar />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="relative min-h-screen flex items-center bg-[#1A3A5C] overflow-hidden">
-          {/* Background texture */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0F2440] via-[#1A3A5C] to-[#1E4A72] opacity-100" />
+        {/* ─── HERO ─── */}
+        <section
+          className="relative min-h-screen flex items-center overflow-hidden"
+          style={{ background: "var(--bg-base)" }}
+        >
+          {/* Radial purple glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 90% 55% at 30% 0%, rgba(107,63,160,0.18) 0%, transparent 65%)",
+            }}
+          />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full pt-24 pb-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              {/* Text */}
+          {/* Animated sound bars — decorative background layer */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+            style={{ opacity: 0.25 }}
+          >
+            <SoundBars count={60} className="h-full w-full" />
+          </div>
+
+          <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full pt-28 pb-24">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+              {/* Text column */}
               <div>
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="text-xs font-semibold uppercase tracking-[0.25em] text-white/60 mb-6"
+                  className="flex items-center gap-3 mb-8"
                 >
-                  SAG-AFTRA Talent &bull; Atlanta, GA
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
+                    style={{
+                      border: "1px solid rgba(147,97,202,0.3)",
+                      color: "var(--purple-light)",
+                      background: "rgba(147,97,202,0.07)",
+                    }}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        background: "var(--purple)",
+                        animation: "pulseRing 2s ease-out infinite",
+                      }}
+                    />
+                    SAG-AFTRA Talent
+                  </span>
+                  <span
+                    className="text-xs"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    Atlanta, GA
+                  </span>
+                </motion.div>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.07 }}
+                  className="text-xs font-semibold uppercase tracking-[0.32em] mb-3"
+                  style={{ color: "var(--purple-light)" }}
+                >
+                  The Voice Of
                 </motion.p>
 
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.1 }}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight mb-6"
+                  transition={{ duration: 0.7, delay: 0.12 }}
+                  className="text-[clamp(4rem,10vw,7rem)] font-bold text-white leading-[0.92] tracking-tight mb-8"
+                  style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  The Voice of<br />
-                  <span className="text-white/90">Mark Aston</span>
+                  Mark<br />
+                  <em
+                    className="not-italic font-normal"
+                    style={{ color: "var(--purple-light)" }}
+                  >
+                    Aston
+                  </em>
                 </motion.h1>
 
                 <motion.p
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.2 }}
-                  className="text-lg text-white/70 leading-relaxed max-w-md mb-10"
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-base leading-relaxed max-w-md mb-10"
+                  style={{ color: "var(--text-secondary)" }}
                 >
                   Twenty years of union voice work for CBS, Disney, Coca-Cola,
                   and dozens of the world&apos;s most recognized brands.
                 </motion.p>
 
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, delay: 0.3 }}
-                  className="flex flex-wrap gap-4"
+                  transition={{ duration: 0.6, delay: 0.28 }}
+                  className="flex flex-wrap gap-3"
                 >
                   <Link
                     href="/demos"
-                    className="px-8 py-3.5 rounded-full bg-white text-[#1A3A5C] font-semibold text-sm hover:bg-white/90 transition-colors"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
+                    style={{ background: "var(--purple)" }}
                   >
                     Listen to Demos
+                    <ArrowRight size={15} />
                   </Link>
                   <Link
                     href="/contact"
-                    className="px-8 py-3.5 rounded-full border-2 border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
+                    style={{
+                      border: "1.5px solid rgba(147,97,202,0.3)",
+                      color: "var(--text-secondary)",
+                    }}
                   >
-                    Book Now
+                    Book a Session
                   </Link>
                 </motion.div>
               </div>
 
-              {/* Photo */}
+              {/* Photo column */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.18 }}
                 className="flex justify-center lg:justify-end"
               >
                 <div className="relative">
-                  {/* Decorative ring behind card */}
-                  <div className="absolute -inset-3 rounded-[28px] border border-white/15" />
-                  {/* Photo card — white bg is intentional, portrait-card style */}
-                  <div className="relative w-[300px] h-[400px] sm:w-[340px] sm:h-[440px] rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)] bg-white">
+                  {/* Ambient glow behind photo */}
+                  <div
+                    className="absolute -inset-10 rounded-full blur-3xl pointer-events-none"
+                    style={{
+                      background: "var(--purple)",
+                      opacity: 0.12,
+                    }}
+                  />
+
+                  {/* Photo */}
+                  <div
+                    className="relative w-[300px] h-[380px] sm:w-[340px] sm:h-[430px] rounded-2xl overflow-hidden"
+                    style={{
+                      boxShadow:
+                        "0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(147,97,202,0.18)",
+                    }}
+                  >
                     <Image
                       src="/images/mark-aston.jpg"
                       alt="Mark Aston, Voice Over Actor"
@@ -142,54 +220,216 @@ export default function HomePage() {
                       sizes="(max-width: 640px) 300px, 340px"
                     />
                   </div>
-                  {/* Badge */}
-                  <div className="absolute -bottom-4 -left-4 bg-white rounded-xl px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#6B7280]">
+
+                  {/* Equalizer bars alongside photo */}
+                  <div
+                    className="absolute -right-5 top-1/2 -translate-y-1/2 flex flex-col gap-1"
+                    style={{ width: "12px", height: "120px" }}
+                  >
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="rounded-full flex-1 origin-bottom"
+                        style={{
+                          background: "var(--purple-light)",
+                          opacity: 0.25 + (i % 3) * 0.12,
+                          animation: `soundBar ${0.85 + i * 0.17}s ease-in-out ${i * 0.11}s infinite`,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* SAG-AFTRA badge */}
+                  <div
+                    className="absolute -bottom-4 -left-4 rounded-xl px-4 py-3"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                    }}
+                  >
+                    <p
+                      className="text-[9px] font-semibold uppercase tracking-[0.14em]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       Union Member
                     </p>
-                    <p className="text-sm font-bold text-[#1A3A5C]">
-                      SAG-AFTRA
-                    </p>
+                    <p className="text-sm font-bold text-white">SAG-AFTRA</p>
                   </div>
                 </div>
               </motion.div>
             </div>
           </div>
+
+          {/* Bottom fade into next section */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent, var(--bg-surface))",
+            }}
+          />
         </section>
 
-        {/* Voice Qualities Strip */}
-        <section className="bg-[#F7F7F7] border-y border-[#E5E5E5]">
+        {/* ─── STATS BAR ─── */}
+        <section
+          style={{
+            background: "var(--bg-surface)",
+            borderBottom: "1px solid var(--border)",
+          }}
+        >
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-              {qualities.map((q, i) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="text-center"
+                >
+                  <p
+                    className="text-2xl sm:text-3xl font-bold text-white mb-1"
+                    style={{ fontFamily: "var(--font-playfair)" }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p
+                    className="text-[10px] uppercase tracking-[0.14em]"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── CLIENT LOGOS ─── */}
+        <section
+          style={{ background: "var(--bg-base)" }}
+          className="py-16"
+        >
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] mb-10"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Clients include
+            </motion.p>
+            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
+              {clients.map((client, i) => (
                 <motion.span
-                  key={q}
+                  key={client}
                   custom={i}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
                   variants={fadeUp}
-                  className="text-sm font-semibold tracking-[0.15em] uppercase text-[#1A3A5C]"
+                  className="text-base sm:text-lg font-bold tracking-tight transition-all duration-300 hover:opacity-60"
+                  style={{ color: "rgba(147,97,202,0.32)" }}
                 >
-                  {q}
-                  {i < qualities.length - 1 && (
-                    <span className="ml-8 text-[#D1D5DB]">&middot;</span>
-                  )}
+                  {client}
                 </motion.span>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Services */}
-        <section className="py-20 sm:py-28 bg-white">
+        {/* ─── FEATURED DEMO PLAYER ─── */}
+        <section
+          className="py-20 sm:py-28"
+          style={{
+            background: "var(--bg-surface)",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
+              {/* Left — copy */}
+              <div className="lg:sticky lg:top-24">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
+                  style={{ color: "var(--purple-light)" }}
+                >
+                  Voice Demos
+                </motion.p>
+                <motion.h2
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  Hear the{" "}
+                  <em
+                    className="not-italic font-normal"
+                    style={{ color: "var(--purple-light)" }}
+                  >
+                    voice
+                  </em>
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="text-base leading-relaxed max-w-sm mb-8"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Commercial. Narration. Character. Promo. Browse every category
+                  and find the right sound for your project.
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.18 }}
+                >
+                  <Link
+                    href="/demos"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:opacity-70"
+                    style={{ color: "var(--purple-light)" }}
+                  >
+                    All demos <ArrowRight size={14} />
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Right — audio player */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <AudioPlayer />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── SERVICES ─── */}
+        <section
+          style={{ background: "var(--bg-base)" }}
+          className="py-20 sm:py-28"
+        >
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
               <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1A3A5C] mb-3"
+                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
+                style={{ color: "var(--purple-light)" }}
               >
                 What I Do
               </motion.p>
@@ -197,14 +437,14 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="text-3xl sm:text-4xl font-bold text-[#111111] tracking-tight"
+                className="text-3xl sm:text-4xl font-bold text-white"
+                style={{ fontFamily: "var(--font-playfair)" }}
               >
-                What I do
+                Services
               </motion.h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {services.map((service, i) => {
                 const Icon = service.icon;
                 return (
@@ -215,17 +455,42 @@ export default function HomePage() {
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={fadeUp}
-                    className="bg-white border border-[#E5E5E5] rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow"
+                    className="p-8 rounded-2xl transition-all duration-300 hover:border-purple-500/20"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                    }}
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#1A3A5C]/8 flex items-center justify-center mb-6">
-                      <Icon size={22} className="text-[#1A3A5C]" />
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-6"
+                      style={{ background: "rgba(147,97,202,0.1)" }}
+                    >
+                      <Icon size={20} style={{ color: "var(--purple-light)" }} />
                     </div>
-                    <h3 className="text-lg font-bold text-[#111111] mb-3">
+                    <h3 className="text-sm font-bold text-white mb-3">
                       {service.title}
                     </h3>
-                    <p className="text-base text-[#444444] leading-relaxed">
+                    <p
+                      className="text-sm leading-relaxed mb-5"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       {service.description}
                     </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {service.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wide"
+                          style={{
+                            background: "rgba(147,97,202,0.07)",
+                            color: "var(--text-muted)",
+                            border: "1px solid rgba(147,97,202,0.1)",
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </motion.div>
                 );
               })}
@@ -233,90 +498,29 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Client Logos */}
-        <section className="py-20 sm:py-24 bg-[#F7F7F7] border-y border-[#E5E5E5]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+        {/* ─── CTA ─── */}
+        <section
+          className="py-24 sm:py-32 relative overflow-hidden"
+          style={{
+            background: "var(--bg-surface)",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
+          {/* Purple ambient glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 55% 75% at 50% 50%, rgba(107,63,160,0.14) 0%, transparent 70%)",
+            }}
+          />
+          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6B7280] mb-10"
-            >
-              Trusted by the world&apos;s leading brands
-            </motion.p>
-            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
-              {clients.map((client, i) => (
-                <motion.span
-                  key={client}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  className="text-lg font-bold text-[#9CA3AF] hover:text-[#1A3A5C] transition-colors tracking-tight"
-                >
-                  {client}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Demos CTA */}
-        <section className="py-20 sm:py-28 bg-white">
-          <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1A3A5C] mb-4"
-            >
-              Voice Demos
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-3xl sm:text-4xl font-bold text-[#111111] tracking-tight mb-6"
-            >
-              Hear the voice
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-base text-[#444444] leading-relaxed max-w-xl mx-auto mb-10"
-            >
-              Commercial. Narration. Character. Animation. Listen to demos
-              across every category and find the right sound for your project.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Link
-                href="/demos"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#1A3A5C] text-white font-semibold text-sm hover:bg-[#2B5C8A] transition-colors"
-              >
-                Explore All Demos
-                <ChevronRight size={16} />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Contact / Booking CTA */}
-        <section className="py-20 sm:py-28 bg-[#1A3A5C]">
-          <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 mb-4"
+              className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-6"
+              style={{ color: "var(--purple-light)" }}
             >
               Ready to work together?
             </motion.p>
@@ -324,8 +528,8 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-6"
+              className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight"
+              style={{ fontFamily: "var(--font-playfair)" }}
             >
               Let&apos;s work together
             </motion.h2>
@@ -333,8 +537,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-base text-white/70 leading-relaxed max-w-lg mx-auto mb-10"
+              transition={{ delay: 0.1 }}
+              className="text-base leading-relaxed max-w-lg mx-auto mb-10"
+              style={{ color: "var(--text-secondary)" }}
             >
               Quick turnaround. Union quality. Response within 24 hours, often
               within the hour.
@@ -343,20 +548,25 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ delay: 0.2 }}
               className="flex flex-wrap justify-center gap-4"
             >
               <Link
                 href="/contact"
-                className="px-8 py-3.5 rounded-full bg-white text-[#1A3A5C] font-semibold text-sm hover:bg-white/90 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
+                style={{ background: "var(--purple)" }}
               >
-                Book a Session
+                Book a Session <ArrowRight size={15} />
               </Link>
               <Link
-                href="/about"
-                className="px-8 py-3.5 rounded-full border-2 border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+                href="/demos"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
+                style={{
+                  border: "1.5px solid rgba(147,97,202,0.3)",
+                  color: "var(--text-secondary)",
+                }}
               >
-                Learn More
+                Hear the Demos
               </Link>
             </motion.div>
           </div>

@@ -44,13 +44,35 @@ const budgetRanges = [
   "Not sure yet",
 ];
 
+const sidebarItems = [
+  {
+    icon: Clock,
+    title: "Quick Response",
+    body: "Response within 24 hours, often within the hour.",
+  },
+  {
+    icon: Mail,
+    title: "Email",
+    body: "Use the form to send your project details directly.",
+  },
+  {
+    icon: Phone,
+    title: "Phone",
+    body: "Available upon request for direct consultation.",
+  },
+];
+
 export default function ContactPage() {
   const [form, setForm] = useState<FormData>(initialForm);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -71,7 +93,8 @@ export default function ContactPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(
-          (data as { error?: string }).error ?? "Something went wrong. Please try again."
+          (data as { error?: string }).error ??
+            "Something went wrong. Please try again."
         );
       }
 
@@ -80,29 +103,51 @@ export default function ContactPage() {
     } catch (err: unknown) {
       setStatus("error");
       setErrorMessage(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
       );
     }
   }
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white text-sm text-[#111111] placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]/20 focus:border-[#1A3A5C] transition-colors";
+    "w-full px-4 py-3 rounded-xl text-sm text-white placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 transition-all";
+  const inputStyle = {
+    background: "var(--bg-base)",
+    border: "1px solid var(--border)",
+    "--tw-ring-color": "var(--purple)",
+  } as React.CSSProperties;
 
-  const labelClass = "block text-xs font-semibold uppercase tracking-[0.12em] text-[#6B7280] mb-2";
+  const labelClass =
+    "block text-[10px] font-semibold uppercase tracking-[0.14em] mb-2";
 
   return (
     <>
       <Navbar />
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-20" style={{ background: "var(--bg-base)" }}>
         {/* Header */}
-        <section className="py-20 sm:py-28 bg-white border-b border-[#E5E5E5]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <section
+          className="py-20 sm:py-28 relative overflow-hidden"
+          style={{
+            background: "var(--bg-surface)",
+            borderBottom: "1px solid var(--border)",
+          }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 80% at 0% 60%, rgba(107,63,160,0.12) 0%, transparent 65%)",
+            }}
+          />
+          <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             <div className="max-w-2xl">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1A3A5C] mb-4"
+                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
+                style={{ color: "var(--purple-light)" }}
               >
                 Contact & Booking
               </motion.p>
@@ -110,7 +155,8 @@ export default function ContactPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-6 leading-tight"
+                className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-6 leading-tight"
+                style={{ fontFamily: "var(--font-playfair)" }}
               >
                 Let&apos;s work together
               </motion.h1>
@@ -118,38 +164,24 @@ export default function ContactPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base text-[#444444] leading-relaxed"
+                className="text-base leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
               >
-                Tell Mark about your project and he&apos;ll be in touch promptly.
-                Quick turnaround is the standard, often within the hour.
+                Tell Mark about your project and he&apos;ll be in touch
+                promptly. Quick turnaround is the standard, often within the
+                hour.
               </motion.p>
             </div>
           </div>
         </section>
 
-        {/* Content */}
-        <section className="py-20 sm:py-28 bg-[#F7F7F7]">
+        {/* Form + Sidebar */}
+        <section className="py-20 sm:py-28">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              {/* Sidebar Info */}
-              <div className="lg:col-span-1 flex flex-col gap-6">
-                {[
-                  {
-                    icon: Clock,
-                    title: "Quick Response",
-                    body: "Response within 24 hours, often within the hour.",
-                  },
-                  {
-                    icon: Mail,
-                    title: "Email",
-                    body: "Use the form to send your project details directly.",
-                  },
-                  {
-                    icon: Phone,
-                    title: "Phone",
-                    body: "Available upon request for direct consultation.",
-                  },
-                ].map((item, i) => {
+              {/* Sidebar */}
+              <div className="flex flex-col gap-4">
+                {sidebarItems.map((item, i) => {
                   const Icon = item.icon;
                   return (
                     <motion.div
@@ -157,17 +189,30 @@ export default function ContactPage() {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.55, delay: i * 0.1 + 0.2 }}
-                      className="bg-white border border-[#E5E5E5] rounded-2xl p-6 shadow-sm"
+                      className="rounded-2xl p-5"
+                      style={{
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border)",
+                      }}
                     >
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#1A3A5C]/8 flex items-center justify-center flex-shrink-0">
-                          <Icon size={18} className="text-[#1A3A5C]" />
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: "rgba(147,97,202,0.1)" }}
+                        >
+                          <Icon
+                            size={17}
+                            style={{ color: "var(--purple-light)" }}
+                          />
                         </div>
                         <div>
-                          <h3 className="text-sm font-bold text-[#111111] mb-1">
+                          <h3 className="text-sm font-bold text-white mb-1">
                             {item.title}
                           </h3>
-                          <p className="text-sm text-[#6B7280] leading-relaxed">
+                          <p
+                            className="text-sm leading-relaxed"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
                             {item.body}
                           </p>
                         </div>
@@ -180,10 +225,19 @@ export default function ContactPage() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, delay: 0.5 }}
-                  className="bg-[#1A3A5C] rounded-2xl p-6 text-white"
+                  className="rounded-2xl p-5"
+                  style={{
+                    background: "rgba(147,97,202,0.08)",
+                    border: "1px solid rgba(147,97,202,0.18)",
+                  }}
                 >
-                  <h3 className="text-sm font-bold mb-2">Atlanta, Georgia</h3>
-                  <p className="text-sm text-white/70 leading-relaxed">
+                  <h3 className="text-sm font-bold text-white mb-2">
+                    Atlanta, Georgia
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     SAG-AFTRA union member. Available for remote sessions
                     globally. Professional home studio with broadcast-quality
                     audio.
@@ -199,28 +253,53 @@ export default function ContactPage() {
                 className="lg:col-span-2"
               >
                 {status === "success" ? (
-                  <div className="bg-white border border-[#E5E5E5] rounded-2xl p-12 shadow-sm text-center">
-                    <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle2 size={32} className="text-green-600" />
+                  <div
+                    className="rounded-2xl p-12 text-center"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6"
+                      style={{ background: "rgba(147,97,202,0.12)" }}
+                    >
+                      <CheckCircle2
+                        size={28}
+                        style={{ color: "var(--purple-light)" }}
+                      />
                     </div>
-                    <h2 className="text-2xl font-bold text-[#111111] mb-3 tracking-tight">
+                    <h2
+                      className="text-2xl font-bold text-white mb-3 tracking-tight"
+                      style={{ fontFamily: "var(--font-playfair)" }}
+                    >
                       Message sent!
                     </h2>
-                    <p className="text-sm text-[#6B7280] leading-relaxed max-w-sm mx-auto">
+                    <p
+                      className="text-sm leading-relaxed max-w-sm mx-auto"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       Thank you for reaching out. Mark will be in touch within
-                      24 hours — often much sooner.
+                      24 hours, often much sooner.
                     </p>
                   </div>
                 ) : (
                   <form
                     onSubmit={handleSubmit}
-                    className="bg-white border border-[#E5E5E5] rounded-2xl p-8 shadow-sm"
+                    className="rounded-2xl p-8"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                    }}
                   >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      {/* Name */}
                       <div>
-                        <label htmlFor="name" className={labelClass}>
-                          Full Name <span className="text-red-500">*</span>
+                        <label
+                          htmlFor="name"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Full Name <span className="text-red-400">*</span>
                         </label>
                         <input
                           id="name"
@@ -231,13 +310,17 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="Your name"
                           className={inputClass}
+                          style={inputStyle}
                         />
                       </div>
 
-                      {/* Email */}
                       <div>
-                        <label htmlFor="email" className={labelClass}>
-                          Email Address <span className="text-red-500">*</span>
+                        <label
+                          htmlFor="email"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Email Address <span className="text-red-400">*</span>
                         </label>
                         <input
                           id="email"
@@ -248,13 +331,23 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="your@email.com"
                           className={inputClass}
+                          style={inputStyle}
                         />
                       </div>
 
-                      {/* Phone */}
                       <div>
-                        <label htmlFor="phone" className={labelClass}>
-                          Phone <span className="text-[#9CA3AF] normal-case font-normal tracking-normal">(optional)</span>
+                        <label
+                          htmlFor="phone"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Phone{" "}
+                          <span
+                            className="normal-case font-normal tracking-normal text-xs"
+                            style={{ color: "var(--text-muted)", opacity: 0.6 }}
+                          >
+                            (optional)
+                          </span>
                         </label>
                         <input
                           id="phone"
@@ -264,13 +357,17 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="+1 (555) 000-0000"
                           className={inputClass}
+                          style={inputStyle}
                         />
                       </div>
 
-                      {/* Project Type */}
                       <div>
-                        <label htmlFor="projectType" className={labelClass}>
-                          Project Type <span className="text-red-500">*</span>
+                        <label
+                          htmlFor="projectType"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Project Type <span className="text-red-400">*</span>
                         </label>
                         <select
                           id="projectType"
@@ -279,6 +376,12 @@ export default function ContactPage() {
                           value={form.projectType}
                           onChange={handleChange}
                           className={inputClass}
+                          style={{
+                            ...inputStyle,
+                            color: form.projectType
+                              ? "var(--text)"
+                              : "var(--text-muted)",
+                          }}
                         >
                           <option value="">Select a type...</option>
                           {projectTypes.map((t) => (
@@ -289,9 +392,12 @@ export default function ContactPage() {
                         </select>
                       </div>
 
-                      {/* Budget */}
                       <div className="sm:col-span-2">
-                        <label htmlFor="budget" className={labelClass}>
+                        <label
+                          htmlFor="budget"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
                           Budget Range
                         </label>
                         <select
@@ -300,6 +406,12 @@ export default function ContactPage() {
                           value={form.budget}
                           onChange={handleChange}
                           className={inputClass}
+                          style={{
+                            ...inputStyle,
+                            color: form.budget
+                              ? "var(--text)"
+                              : "var(--text-muted)",
+                          }}
                         >
                           <option value="">Select a range...</option>
                           {budgetRanges.map((b) => (
@@ -310,10 +422,13 @@ export default function ContactPage() {
                         </select>
                       </div>
 
-                      {/* Message */}
                       <div className="sm:col-span-2">
-                        <label htmlFor="message" className={labelClass}>
-                          Project Details <span className="text-red-500">*</span>
+                        <label
+                          htmlFor="message"
+                          className={labelClass}
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Project Details <span className="text-red-400">*</span>
                         </label>
                         <textarea
                           id="message"
@@ -324,12 +439,19 @@ export default function ContactPage() {
                           onChange={handleChange}
                           placeholder="Tell Mark about your project — what you need, your timeline, and any style direction..."
                           className={`${inputClass} resize-none`}
+                          style={inputStyle}
                         />
                       </div>
                     </div>
 
                     {status === "error" && (
-                      <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
+                      <div
+                        className="mt-4 p-4 rounded-xl text-sm text-red-300"
+                        style={{
+                          background: "rgba(239,68,68,0.08)",
+                          border: "1px solid rgba(239,68,68,0.2)",
+                        }}
+                      >
                         {errorMessage}
                       </div>
                     )}
@@ -338,7 +460,8 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={status === "loading"}
-                        className="w-full sm:w-auto px-10 py-3.5 rounded-full bg-[#1A3A5C] text-white font-semibold text-sm hover:bg-[#2B5C8A] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto px-10 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ background: "var(--purple)" }}
                       >
                         {status === "loading" ? "Sending..." : "Send Message"}
                       </button>

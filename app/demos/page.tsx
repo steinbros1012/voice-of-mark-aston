@@ -1,72 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
-import { Play, Mail } from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const demos = [
-  {
-    title: "Commercial Demo",
-    description:
-      "TV and radio spots across national brands, retail, automotive, and lifestyle.",
-    tags: ["TV Spot", "Radio", "Retail", "Automotive"],
-    duration: "1:30",
-  },
-  {
-    title: "Narration Demo",
-    description:
-      "Corporate narration, documentary, e-learning, and audiobooks.",
-    tags: ["Documentary", "Corporate", "E-Learning", "Audiobook"],
-    duration: "1:45",
-  },
-  {
-    title: "Character Demo",
-    description:
-      "A range of distinct character voices, from heroic leads to comedic supporting roles, villains, and everything in between.",
-    tags: ["Animation", "Video Game", "Villain", "Hero"],
-    duration: "1:30",
-  },
-  {
-    title: "Animation Demo",
-    description:
-      "Dedicated animation showcase with voiced characters across genres — action, comedy, adventure, and children's.",
-    tags: ["Kids", "Action", "Comedy", "Adventure"],
-    duration: "1:15",
-  },
-  {
-    title: "Promo & Imaging Demo",
-    description:
-      "Network promos, station imaging, and broadcast announcements.",
-    tags: ["Network Promo", "Imaging", "Broadcast", "Announcer"],
-    duration: "1:00",
-  },
-];
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.55, ease: "easeOut" as const },
-  }),
-};
+import AudioPlayer from "@/components/AudioPlayer";
 
 export default function DemosPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-20" style={{ background: "var(--bg-base)" }}>
         {/* Header */}
-        <section className="py-20 sm:py-28 bg-white border-b border-[#E5E5E5]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <section
+          className="py-20 sm:py-28 relative overflow-hidden"
+          style={{
+            background: "var(--bg-surface)",
+            borderBottom: "1px solid var(--border)",
+          }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 60% at 0% 50%, rgba(107,63,160,0.14) 0%, transparent 65%)",
+            }}
+          />
+          <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             <div className="max-w-2xl">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1A3A5C] mb-4"
+                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
+                style={{ color: "var(--purple-light)" }}
               >
                 Voice Demos
               </motion.p>
@@ -74,105 +42,53 @@ export default function DemosPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-5xl font-bold text-[#111111] tracking-tight mb-6 leading-tight"
+                className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-6 leading-tight"
+                style={{ fontFamily: "var(--font-playfair)" }}
               >
-                Hear the voice
+                Hear the{" "}
+                <em
+                  className="not-italic font-normal"
+                  style={{ color: "var(--purple-light)" }}
+                >
+                  voice
+                </em>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base text-[#444444] leading-relaxed"
+                className="text-base leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
               >
                 Five demo categories covering the full range of Mark&apos;s
-                capabilities — commercial, narration, character, animation, and
+                work — commercial, narration, character, animation, and
                 broadcast imaging. Demo files are being added shortly.
               </motion.p>
             </div>
           </div>
         </section>
 
-        {/* Demo Cards */}
-        <section className="py-20 sm:py-28 bg-[#F7F7F7]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col gap-6">
-              {demos.map((demo, i) => (
-                <motion.div
-                  key={demo.title}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  className="bg-white border border-[#E5E5E5] rounded-2xl p-6 sm:p-8 shadow-sm"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                    {/* Play Button */}
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-[#1A3A5C]/8 border border-[#1A3A5C]/15 flex items-center justify-center">
-                        <Play
-                          size={22}
-                          className="text-[#1A3A5C] ml-0.5"
-                          fill="currentColor"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-baseline gap-3 mb-2">
-                        <h2 className="text-xl font-bold text-[#111111] tracking-tight">
-                          {demo.title}
-                        </h2>
-                        <span className="text-xs font-medium text-[#9CA3AF]">
-                          {demo.duration}
-                        </span>
-                      </div>
-                      <p className="text-sm text-[#444444] leading-relaxed mb-4">
-                        {demo.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {demo.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-3 py-1 rounded-full bg-[#F7F7F7] border border-[#E5E5E5] text-xs font-medium text-[#6B7280]"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Coming Soon Badge */}
-                    <div className="flex-shrink-0 sm:text-right">
-                      <span className="inline-block px-3 py-1.5 rounded-full bg-[#F7F7F7] border border-[#E5E5E5] text-xs font-semibold uppercase tracking-[0.12em] text-[#9CA3AF]">
-                        Coming Soon
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Waveform Placeholder */}
-                  <div className="mt-6 h-12 rounded-xl bg-[#F7F7F7] border border-[#E5E5E5] flex items-center px-4 gap-1 overflow-hidden">
-                    {Array.from({ length: 60 }).map((_, j) => (
-                      <div
-                        key={j}
-                        className="flex-1 rounded-full bg-[#1A3A5C]/15"
-                        style={{
-                          height: `${20 + Math.sin(j * 0.8) * 12 + Math.cos(j * 0.4) * 8}px`,
-                          minHeight: "4px",
-                          maxHeight: "40px",
-                        }}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        {/* Player */}
+        <section className="py-20 sm:py-28">
+          <div className="max-w-3xl mx-auto px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+            >
+              <AudioPlayer />
+            </motion.div>
           </div>
         </section>
 
-        {/* Contact for Samples CTA */}
-        <section className="py-20 sm:py-24 bg-white border-t border-[#E5E5E5]">
+        {/* Contact CTA */}
+        <section
+          className="py-16 sm:py-20"
+          style={{
+            background: "var(--bg-surface)",
+            borderTop: "1px solid var(--border)",
+          }}
+        >
           <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -181,19 +97,29 @@ export default function DemosPage() {
               transition={{ duration: 0.6 }}
               className="flex flex-col items-center"
             >
-              <div className="w-14 h-14 rounded-full bg-[#1A3A5C]/8 flex items-center justify-center mb-6">
-                <Mail size={22} className="text-[#1A3A5C]" />
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center mb-6"
+                style={{ background: "rgba(147,97,202,0.1)" }}
+              >
+                <Mail size={20} style={{ color: "var(--purple-light)" }} />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#111111] tracking-tight mb-4">
+              <h2
+                className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
                 Need samples now?
               </h2>
-              <p className="text-base text-[#444444] leading-relaxed max-w-lg mb-8">
-                Demo files are coming soon — but don&apos;t wait. Contact Mark directly
-                for immediate samples tailored to your project.
+              <p
+                className="text-base leading-relaxed max-w-md mb-8"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Demo files are coming soon. Contact Mark directly for immediate
+                samples tailored to your project.
               </p>
               <Link
                 href="/contact"
-                className="px-8 py-3.5 rounded-full bg-[#1A3A5C] text-white font-semibold text-sm hover:bg-[#2B5C8A] transition-colors"
+                className="px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
+                style={{ background: "var(--purple)" }}
               >
                 Request Immediate Samples
               </Link>
