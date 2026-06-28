@@ -1,24 +1,15 @@
 "use client";
 
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Mic, Radio, Film } from "lucide-react";
+import { ArrowRight, Mic, Radio, Film, Play, Pause } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SoundBars from "@/components/SoundBars";
 import AudioPlayer from "@/components/AudioPlayer";
-
-const clients = [
-  "CBS",
-  "MTV",
-  "Coca-Cola",
-  "Six Flags",
-  "Disney",
-  "Warner Bros.",
-  "Pepsi",
-  "Walmart",
-];
+import LogoMarquee from "@/components/LogoMarquee";
 
 const services = [
   {
@@ -50,6 +41,51 @@ const stats = [
   { value: "24hr", label: "Standard turnaround" },
   { value: "100+", label: "Brands served" },
 ];
+
+// Play a preview clip directly from the hero
+function HeroPlayButton() {
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  function toggle() {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) {
+      a.pause();
+      setPlaying(false);
+    } else {
+      a.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  }
+
+  return (
+    <>
+      <audio
+        ref={audioRef}
+        src="/demos/commercial.mp3"
+        onEnded={() => setPlaying(false)}
+        preload="none"
+      />
+      <button
+        onClick={toggle}
+        className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
+        style={{ background: "var(--purple)" }}
+      >
+        {playing ? (
+          <>
+            <Pause size={15} fill="white" />
+            Playing...
+          </>
+        ) : (
+          <>
+            <Play size={15} fill="white" className="ml-0.5" />
+            Hear the Voice
+          </>
+        )}
+      </button>
+    </>
+  );
+}
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -136,7 +172,7 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.12 }}
-                  className="text-[clamp(4rem,10vw,7rem)] font-bold text-white leading-[0.92] tracking-tight mb-8"
+                  className="text-[clamp(4rem,10vw,7rem)] font-bold text-white leading-[0.92] tracking-tight mb-4"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   Mark<br />
@@ -148,10 +184,21 @@ export default function HomePage() {
                   </em>
                 </motion.h1>
 
+                {/* 3-word descriptor */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.18 }}
+                  className="text-sm font-semibold tracking-[0.18em] uppercase mb-7"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Powerful &middot; Versatile &middot; Unforgettable
+                </motion.p>
+
                 <motion.p
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
+                  transition={{ duration: 0.6, delay: 0.22 }}
                   className="text-base leading-relaxed max-w-md mb-10"
                   style={{ color: "var(--text-secondary)" }}
                 >
@@ -162,17 +209,11 @@ export default function HomePage() {
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.28 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
                   className="flex flex-wrap gap-3"
                 >
-                  <Link
-                    href="/demos"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
-                    style={{ background: "var(--purple)" }}
-                  >
-                    Listen to Demos
-                    <ArrowRight size={15} />
-                  </Link>
+                  {/* Hero play button — hear voice immediately */}
+                  <HeroPlayButton />
                   <Link
                     href="/contact"
                     className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
@@ -307,38 +348,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ─── CLIENT LOGOS ─── */}
+        {/* ─── CLIENT LOGOS MARQUEE ─── */}
         <section
           style={{ background: "var(--bg-base)" }}
-          className="py-16"
+          className="py-14"
         >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] mb-10"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Clients include
-            </motion.p>
-            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
-              {clients.map((client, i) => (
-                <motion.span
-                  key={client}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  className="text-base sm:text-lg font-bold tracking-tight transition-all duration-300 hover:opacity-60"
-                  style={{ color: "rgba(147,97,202,0.32)" }}
-                >
-                  {client}
-                </motion.span>
-              ))}
-            </div>
-          </div>
+          <p
+            className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] mb-8"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Clients include
+          </p>
+          <LogoMarquee />
         </section>
 
         {/* ─── FEATURED DEMO PLAYER ─── */}
