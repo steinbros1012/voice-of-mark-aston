@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Lavender background with rounded corners -->
+  <rect width="200" height="200" fill="#C47ED6" rx="20"/>
+  <!-- Bold geometric V letterform -->
+  <!-- Outer points: top-left (36,44), bottom-center (100,160), top-right (164,44) -->
+  <!-- Inner stroke width ~34px, creating inner notch at (100,120) -->
+  <path
+    d="M 36,44 L 70,44 L 100,120 L 130,44 L 164,44 L 100,160 Z"
+    fill="#6B3FA0"
+  />
+</svg>

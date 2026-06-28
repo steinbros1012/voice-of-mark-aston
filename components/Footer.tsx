@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const footerLinks = [
@@ -20,20 +21,13 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-5">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #C47ED6 0%, #7040A8 100%)",
-                }}
-              >
-                <span
-                  className="text-white font-black text-sm leading-none"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  V
-                </span>
-              </div>
+              <Image
+                src="/images/voma-logo.svg"
+                alt="VOMA"
+                width={32}
+                height={32}
+                className="rounded-lg flex-shrink-0"
+              />
               <div className="flex flex-col leading-none">
                 <span className="text-[11px] font-bold tracking-[0.22em] uppercase text-white">
                   Mark Aston
