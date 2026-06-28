@@ -128,18 +128,22 @@ export default function HomePage() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="flex justify-center lg:justify-end"
               >
-                <div className="relative w-[340px] h-[420px] sm:w-[380px] sm:h-[460px]">
-                  <div className="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20" />
-                  <Image
-                    src="/images/mark-aston.jpg"
-                    alt="Mark Aston — Voice Over Actor"
-                    fill
-                    className="object-cover object-top rounded-2xl"
-                    priority
-                    sizes="(max-width: 640px) 340px, 380px"
-                  />
+                <div className="relative">
+                  {/* Decorative ring behind card */}
+                  <div className="absolute -inset-3 rounded-[28px] border border-white/15" />
+                  {/* Photo card — white bg is intentional, portrait-card style */}
+                  <div className="relative w-[300px] h-[400px] sm:w-[340px] sm:h-[440px] rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)] bg-white">
+                    <Image
+                      src="/images/mark-aston.jpg"
+                      alt="Mark Aston — Voice Over Actor"
+                      fill
+                      className="object-cover object-top"
+                      priority
+                      sizes="(max-width: 640px) 300px, 340px"
+                    />
+                  </div>
                   {/* Badge */}
-                  <div className="absolute -bottom-4 -right-4 bg-white rounded-xl px-4 py-3 shadow-lg">
+                  <div className="absolute -bottom-4 -left-4 bg-white rounded-xl px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#6B7280]">
                       Union Member
                     </p>
