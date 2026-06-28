@@ -62,7 +62,7 @@ function HeroPlayButton() {
     <>
       <audio
         ref={audioRef}
-        src="/demos/commercial.mp3"
+        src="/demos/auburn-sports-today.mp3"
         onEnded={() => setPlaying(false)}
         preload="none"
       />
