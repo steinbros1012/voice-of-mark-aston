@@ -16,8 +16,8 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-white/70 leading-relaxed max-w-xs">
-              SAG-AFTRA voice over talent based in Atlanta, GA. Delivering
-              powerful, versatile performances for the world&apos;s leading brands.
+              SAG-AFTRA voice over talent based in Atlanta, GA. Available for
+              commercial, narration, character, and broadcast work.
             </p>
           </div>
 
@@ -68,7 +68,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Mark Aston. All rights reserved.
           </p>
           <p className="text-xs text-white/40">
-            The Voice of Mark Aston &mdash; VOMA
+            The Voice of Mark Aston · VOMA
           </p>
         </div>
       </div>

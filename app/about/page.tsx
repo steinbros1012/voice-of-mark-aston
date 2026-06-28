@@ -19,12 +19,12 @@ const capabilities = [
 ];
 
 const qualities = [
-  { word: "Powerful", desc: "A voice that commands attention from the first word." },
-  { word: "Bold", desc: "Confident delivery that never fades into the background." },
-  { word: "Versatile", desc: "From authoritative narration to dynamic characters." },
-  { word: "Hypnotic", desc: "A tone that holds listeners and doesn't let go." },
-  { word: "Uplifting", desc: "Energy that elevates every script and brand." },
-  { word: "Distinctive", desc: "Instantly recognizable. Impossible to forget." },
+  { word: "Powerful", desc: "Commands attention from the first word." },
+  { word: "Bold", desc: "Delivery that never fades into the background." },
+  { word: "Versatile", desc: "Works across narration, commercial, and character work." },
+  { word: "Hypnotic", desc: "Holds attention and keeps it." },
+  { word: "Uplifting", desc: "Brings energy to every read." },
+  { word: "Distinctive", desc: "You know it when you hear it." },
 ];
 
 const fadeUp: Variants = {
@@ -72,16 +72,14 @@ export default function AboutPage() {
                 >
                   <p>
                     Mark Aston is a SAG-AFTRA voice over actor and announcer
-                    based in Atlanta, Georgia. With a career spanning two
-                    decades, he has lent his voice to some of the most
-                    recognizable brands in the world — from CBS and Disney to
-                    Coca-Cola and Walmart.
+                    based in Atlanta, Georgia. Over the past two decades, he has
+                    worked with some of the most recognizable brands out there,
+                    including CBS, Disney, Coca-Cola, and Walmart.
                   </p>
                   <p>
-                    His sound is powerful, versatile, and built for the work
-                    that demands to be heard. Whether it&apos;s a 30-second
-                    commercial, a feature-length documentary, or a theme park
-                    experience, Mark delivers with precision, speed, and
+                    His voice is powerful and versatile. Whether it&apos;s a
+                    30-second commercial, a feature-length documentary, or a
+                    theme park experience, Mark delivers with precision and
                     consistent union-level quality.
                   </p>
                   <p>
@@ -135,7 +133,7 @@ export default function AboutPage() {
                 <div className="relative w-[320px] h-[400px] sm:w-[380px] sm:h-[460px]">
                   <Image
                     src="/images/mark-aston.jpg"
-                    alt="Mark Aston — Voice Over Actor"
+                    alt="Mark Aston, Voice Over Actor"
                     fill
                     className="object-cover object-top rounded-2xl"
                     sizes="(max-width: 640px) 320px, 380px"
@@ -207,7 +205,7 @@ export default function AboutPage() {
                 transition={{ duration: 0.6 }}
                 className="text-3xl sm:text-4xl font-bold text-[#111111] tracking-tight"
               >
-                Six words. One voice.
+                How people describe it
               </motion.h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -252,8 +250,8 @@ export default function AboutPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-base text-white/70 leading-relaxed mb-10 max-w-lg mx-auto"
             >
-              Get in touch today. Quick turnaround, union quality, and a voice
-              built for the work that demands to be heard.
+              Get in touch and Mark will get back to you quickly. Union quality,
+              fast turnaround, and a straightforward booking process.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 16 }}

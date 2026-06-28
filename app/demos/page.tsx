@@ -10,21 +10,21 @@ const demos = [
   {
     title: "Commercial Demo",
     description:
-      "TV and radio spots spanning national brands, retail, automotive, and lifestyle. Powerful reads with punch and warmth.",
+      "TV and radio spots across national brands, retail, automotive, and lifestyle.",
     tags: ["TV Spot", "Radio", "Retail", "Automotive"],
     duration: "1:30",
   },
   {
     title: "Narration Demo",
     description:
-      "Corporate narration, documentary, and e-learning. Clear, authoritative delivery with an engaging cadence.",
+      "Corporate narration, documentary, e-learning, and audiobooks.",
     tags: ["Documentary", "Corporate", "E-Learning", "Audiobook"],
     duration: "1:45",
   },
   {
     title: "Character Demo",
     description:
-      "A range of distinct character voices — from heroic leads to comedic supporting roles, villains, and everything between.",
+      "A range of distinct character voices, from heroic leads to comedic supporting roles, villains, and everything in between.",
     tags: ["Animation", "Video Game", "Villain", "Hero"],
     duration: "1:30",
   },
@@ -38,7 +38,7 @@ const demos = [
   {
     title: "Promo & Imaging Demo",
     description:
-      "Network promos, station imaging, and broadcast announcements. High-energy reads that command the room.",
+      "Network promos, station imaging, and broadcast announcements.",
     tags: ["Network Promo", "Imaging", "Broadcast", "Announcer"],
     duration: "1:00",
   },

@@ -121,7 +121,7 @@ export default function ContactPage() {
                 className="text-base text-[#444444] leading-relaxed"
               >
                 Tell Mark about your project and he&apos;ll be in touch promptly.
-                Quick turnaround is the standard — often within the hour.
+                Quick turnaround is the standard, often within the hour.
               </motion.p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function ContactPage() {
                   {
                     icon: Clock,
                     title: "Quick Response",
-                    body: "Response within 24 hours — often within the hour.",
+                    body: "Response within 24 hours, often within the hour.",
                   },
                   {
                     icon: Mail,

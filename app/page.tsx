@@ -32,7 +32,7 @@ const services = [
     icon: Radio,
     title: "Commercial & Broadcast",
     description:
-      "TV and radio spots, network promos, and imaging. The authoritative sound brands trust to move audiences.",
+      "TV and radio spots, network promos, and imaging for the brands people actually know.",
   },
   {
     icon: Mic,
@@ -96,8 +96,8 @@ export default function HomePage() {
                   transition={{ duration: 0.65, delay: 0.2 }}
                   className="text-lg text-white/70 leading-relaxed max-w-md mb-10"
                 >
-                  Powerful. Versatile. Unforgettable. Twenty years of union
-                  voice work for the world&apos;s most recognized brands.
+                  Twenty years of union voice work for CBS, Disney, Coca-Cola,
+                  and dozens of the world&apos;s most recognized brands.
                 </motion.p>
 
                 <motion.div
@@ -135,7 +135,7 @@ export default function HomePage() {
                   <div className="relative w-[300px] h-[400px] sm:w-[340px] sm:h-[440px] rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)] bg-white">
                     <Image
                       src="/images/mark-aston.jpg"
-                      alt="Mark Aston — Voice Over Actor"
+                      alt="Mark Aston, Voice Over Actor"
                       fill
                       className="object-cover object-top"
                       priority
@@ -200,7 +200,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6 }}
                 className="text-3xl sm:text-4xl font-bold text-[#111111] tracking-tight"
               >
-                Voice work built for impact
+                What I do
               </motion.h2>
             </div>
 
@@ -327,7 +327,7 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
               className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-6"
             >
-              Let&apos;s make something remarkable
+              Let&apos;s work together
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -336,7 +336,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-base text-white/70 leading-relaxed max-w-lg mx-auto mb-10"
             >
-              Quick turnaround. Union quality. Response within 24 hours — often
+              Quick turnaround. Union quality. Response within 24 hours, often
               within the hour.
             </motion.p>
             <motion.div
