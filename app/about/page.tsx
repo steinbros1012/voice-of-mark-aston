@@ -174,7 +174,7 @@ export default function AboutPage() {
                     }}
                   >
                     <Image
-                      src="/images/mark-aston.png"
+                      src="/images/mark-aston.jpg"
                       alt="Mark Aston, Voice Over Actor"
                       fill
                       className="object-cover object-top"
