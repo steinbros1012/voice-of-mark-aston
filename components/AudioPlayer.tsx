@@ -192,7 +192,7 @@ export default function AudioPlayer() {
                 activeCategory === cat
                   ? { background: "var(--purple)", color: "#fff" }
                   : {
-                      background: "rgba(147,97,202,0.07)",
+                      background: "rgba(3,36,77,0.6)",
                       color: hasContent ? "var(--text-secondary)" : "var(--text-muted)",
                       border: "1px solid var(--border)",
                       opacity: hasContent ? 1 : 0.5,
@@ -260,7 +260,7 @@ export default function AudioPlayer() {
                   minHeight: "3px",
                   backgroundColor: played
                     ? "var(--purple)"
-                    : "rgba(147,97,202,0.18)",
+                    : "rgba(232,119,34,0.18)",
                   animation:
                     playing
                       ? `soundBar ${bar.dur}s ease-in-out ${bar.del}s infinite`
@@ -290,7 +290,7 @@ export default function AudioPlayer() {
           <div
             className="h-1 rounded-full mb-3 overflow-hidden"
             style={{
-              background: "rgba(147,97,202,0.12)",
+              background: "rgba(232,119,34,0.12)",
               cursor: canPlay ? "pointer" : "default",
             }}
             onClick={handleSeek}
@@ -328,7 +328,7 @@ export default function AudioPlayer() {
                 onClick={togglePlay}
                 className="relative w-11 h-11 rounded-full flex items-center justify-center transition-transform active:scale-95"
                 style={{
-                  background: canPlay ? "var(--purple)" : "rgba(147,97,202,0.25)",
+                  background: canPlay ? "var(--purple)" : "rgba(232,119,34,0.25)",
                   cursor: canPlay ? "pointer" : "not-allowed",
                 }}
                 aria-label={playing ? "Pause" : "Play"}
@@ -387,16 +387,16 @@ export default function AudioPlayer() {
                   }}
                   className="w-full flex items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-white/3"
                   style={{
-                    background: active ? "rgba(147,97,202,0.07)" : "transparent",
+                    background: active ? "rgba(3,36,77,0.6)" : "transparent",
                     borderBottom:
                       idx < filtered.length - 1
-                        ? "1px solid rgba(147,97,202,0.06)"
+                        ? "1px solid rgba(232,119,34,0.08)"
                         : "none",
                   }}
                 >
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: active ? "var(--purple)" : "rgba(147,97,202,0.1)" }}
+                    style={{ background: active ? "var(--purple)" : "rgba(232,119,34,0.1)" }}
                   >
                     <Play
                       size={10}

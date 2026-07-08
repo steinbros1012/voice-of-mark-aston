@@ -98,7 +98,7 @@ function VideoModal({ video, onClose }: { video: VideoItem; onClose: () => void 
           className="relative rounded-2xl overflow-hidden"
           style={{
             aspectRatio: "16/9",
-            boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(147,97,202,0.15)",
+            boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,119,34,0.15)",
           }}
         >
           <video
@@ -171,8 +171,8 @@ export default function VideoShowcase() {
                 <div
                   className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                   style={{
-                    background: "rgba(147,97,202,0.9)",
-                    boxShadow: "0 0 0 8px rgba(147,97,202,0.15)",
+                    background: "rgba(232,119,34,0.95)",
+                    boxShadow: "0 0 0 8px rgba(232,119,34,0.15)",
                   }}
                 >
                   <Play size={20} fill="white" className="text-white ml-1" />

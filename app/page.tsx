@@ -111,7 +111,7 @@ export default function HomePage() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 90% 55% at 30% 0%, rgba(107,63,160,0.18) 0%, transparent 65%)",
+                "radial-gradient(ellipse 90% 55% at 30% 0%, rgba(232,119,34,0.14) 0%, transparent 65%)",
             }}
           />
 
@@ -136,9 +136,9 @@ export default function HomePage() {
                   <span
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
                     style={{
-                      border: "1px solid rgba(147,97,202,0.3)",
+                      border: "1px solid rgba(232,119,34,0.3)",
                       color: "var(--purple-light)",
-                      background: "rgba(147,97,202,0.07)",
+                      background: "rgba(3,36,77,0.6)",
                     }}
                   >
                     <span
@@ -218,7 +218,7 @@ export default function HomePage() {
                     href="/contact"
                     className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
                     style={{
-                      border: "1.5px solid rgba(147,97,202,0.3)",
+                      border: "1.5px solid rgba(232,119,34,0.3)",
                       color: "var(--text-secondary)",
                     }}
                   >
@@ -249,7 +249,7 @@ export default function HomePage() {
                     className="relative w-[300px] h-[380px] sm:w-[340px] sm:h-[430px] rounded-2xl overflow-hidden"
                     style={{
                       boxShadow:
-                        "0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(147,97,202,0.18)",
+                        "0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(232,119,34,0.18)",
                     }}
                   >
                     <Image
@@ -484,7 +484,7 @@ export default function HomePage() {
                   >
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center mb-6"
-                      style={{ background: "rgba(147,97,202,0.1)" }}
+                      style={{ background: "rgba(232,119,34,0.1)" }}
                     >
                       <Icon size={20} style={{ color: "var(--purple-light)" }} />
                     </div>
@@ -503,9 +503,9 @@ export default function HomePage() {
                           key={tag}
                           className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wide"
                           style={{
-                            background: "rgba(147,97,202,0.07)",
+                            background: "rgba(3,36,77,0.6)",
                             color: "var(--text-muted)",
-                            border: "1px solid rgba(147,97,202,0.1)",
+                            border: "1px solid rgba(232,119,34,0.1)",
                           }}
                         >
                           {tag}
@@ -532,7 +532,7 @@ export default function HomePage() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 55% 75% at 50% 50%, rgba(107,63,160,0.14) 0%, transparent 70%)",
+                "radial-gradient(ellipse 55% 75% at 50% 50%, rgba(232,119,34,0.12) 0%, transparent 70%)",
             }}
           />
           <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
@@ -583,7 +583,7 @@ export default function HomePage() {
                 href="/demos"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
                 style={{
-                  border: "1.5px solid rgba(147,97,202,0.3)",
+                  border: "1.5px solid rgba(232,119,34,0.3)",
                   color: "var(--text-secondary)",
                 }}
               >

@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --purple: #9361CA;
-  --purple-light: #C47ED6;
-  --purple-dark: #6B3FA0;
-  --purple-glow: rgba(147, 97, 202, 0.18);
-  --bg-base: #0B0910;
-  --bg-surface: #100D18;
-  --bg-card: #181324;
-  --border: rgba(147, 97, 202, 0.12);
+  --purple: #E87722;
+  --purple-light: #FF9A4D;
+  --purple-dark: #C45E0A;
+  --purple-glow: rgba(232, 119, 34, 0.18);
+  --bg-base: #03101E;
+  --bg-surface: #061729;
+  --bg-card: #0A2040;
+  --border: rgba(232, 119, 34, 0.18);
   --border-subtle: rgba(255, 255, 255, 0.05);
-  --text: #EDE9F5;
-  --text-secondary: #9B91B2;
-  --text-muted: #635A7A;
+  --text: #F0EDE8;
+  --text-secondary: #8FA8C8;
+  --text-muted: #4A6480;
 }
 
 html {
@@ -54,9 +54,9 @@ body {
 .text-shimmer {
   background: linear-gradient(
     90deg,
-    var(--purple-light) 0%,
-    #e8bff5 45%,
-    var(--purple-light) 100%
+    #E87722 0%,
+    #FFB870 45%,
+    #E87722 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -66,5 +66,5 @@ body {
 }
 
 ::selection {
-  background-color: rgba(147, 97, 202, 0.22);
+  background-color: rgba(232, 119, 34, 0.25);
 }

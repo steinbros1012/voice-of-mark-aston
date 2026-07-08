@@ -25,7 +25,7 @@ export default function DemosPage() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 70% 60% at 0% 50%, rgba(107,63,160,0.14) 0%, transparent 65%)",
+                "radial-gradient(ellipse 70% 60% at 0% 50%, rgba(232,119,34,0.12) 0%, transparent 65%)",
             }}
           />
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
@@ -140,7 +140,7 @@ export default function DemosPage() {
             >
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center mb-6"
-                style={{ background: "rgba(147,97,202,0.1)" }}
+                style={{ background: "rgba(232,119,34,0.1)" }}
               >
                 <Mail size={20} style={{ color: "var(--purple-light)" }} />
               </div>

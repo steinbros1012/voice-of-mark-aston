@@ -137,7 +137,7 @@ export default function ContactPage() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 60% 80% at 0% 60%, rgba(107,63,160,0.12) 0%, transparent 65%)",
+                "radial-gradient(ellipse 60% 80% at 0% 60%, rgba(232,119,34,0.1) 0%, transparent 65%)",
             }}
           />
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
@@ -198,7 +198,7 @@ export default function ContactPage() {
                       <div className="flex items-start gap-4">
                         <div
                           className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{ background: "rgba(147,97,202,0.1)" }}
+                          style={{ background: "rgba(232,119,34,0.1)" }}
                         >
                           <Icon
                             size={17}
@@ -227,8 +227,8 @@ export default function ContactPage() {
                   transition={{ duration: 0.55, delay: 0.5 }}
                   className="rounded-2xl p-5"
                   style={{
-                    background: "rgba(147,97,202,0.08)",
-                    border: "1px solid rgba(147,97,202,0.18)",
+                    background: "rgba(3,36,77,0.5)",
+                    border: "1px solid rgba(232,119,34,0.18)",
                   }}
                 >
                   <h3 className="text-sm font-bold text-white mb-2">
@@ -262,7 +262,7 @@ export default function ContactPage() {
                   >
                     <div
                       className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6"
-                      style={{ background: "rgba(147,97,202,0.12)" }}
+                      style={{ background: "rgba(232,119,34,0.12)" }}
                     >
                       <CheckCircle2
                         size={28}

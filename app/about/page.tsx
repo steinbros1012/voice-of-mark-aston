@@ -50,7 +50,7 @@ export default function AboutPage() {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 60% 80% at 100% 0%, rgba(107,63,160,0.12) 0%, transparent 65%)",
+                "radial-gradient(ellipse 60% 80% at 100% 0%, rgba(232,119,34,0.1) 0%, transparent 65%)",
             }}
           />
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
@@ -121,7 +121,7 @@ export default function AboutPage() {
                       key={badge.label}
                       className="flex items-center gap-2 px-4 py-2 rounded-full"
                       style={{
-                        background: "rgba(147,97,202,0.07)",
+                        background: "rgba(3,36,77,0.6)",
                         border: "1px solid var(--border)",
                       }}
                     >
@@ -170,7 +170,7 @@ export default function AboutPage() {
                     className="relative w-[300px] h-[380px] sm:w-[360px] sm:h-[440px] rounded-2xl overflow-hidden"
                     style={{
                       boxShadow:
-                        "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(147,97,202,0.15)",
+                        "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,119,34,0.15)",
                     }}
                   >
                     <Image
@@ -346,7 +346,7 @@ export default function AboutPage() {
                 href="/demos"
                 className="px-8 py-3.5 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
                 style={{
-                  border: "1.5px solid rgba(147,97,202,0.3)",
+                  border: "1.5px solid rgba(232,119,34,0.3)",
                   color: "var(--text-secondary)",
                 }}
               >

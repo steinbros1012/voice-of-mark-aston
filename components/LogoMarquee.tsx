@@ -33,7 +33,7 @@ export default function LogoMarquee() {
           <span
             key={i}
             className="text-base sm:text-lg font-bold tracking-tight flex-shrink-0"
-            style={{ color: "rgba(147,97,202,0.32)" }}
+            style={{ color: "rgba(232,119,34,0.32)" }}
           >
             {client}
           </span>
