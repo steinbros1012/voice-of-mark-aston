@@ -13,35 +13,75 @@ interface Demo {
 }
 
 const demos: Demo[] = [
-  // Commercial
-  {
-    id: 1,
-    title: "Commercial",
-    category: "Commercial",
-    file: "https://voice123.com/samples/Voice123%20-%20Commercial%20-%20Mark%20Aston.mp3",
-    description: "Commercial demo reel",
-    duration: "0:39",
-  },
   // Trailers
   {
-    id: 2,
-    title: "Trailers",
+    id: 1,
+    title: "Trailer Demo Reel",
     category: "Trailers",
     file: "https://voice123.com/samples/Voice123%20-%20Trailers%20-%20Mark%20Aston.mp3",
     description: "Trailer demo reel",
     duration: "1:17",
   },
   {
-    id: 3,
+    id: 2,
     title: "Older Trailers",
     category: "Trailers",
     file: "https://voice123.com/samples/Voice123%20-%20OLDER%20TRAILERS%20-%20Mark%20Aston.mp3",
-    description: "Classic trailer reel",
+    description: "Classic trailer work",
     duration: "2:40",
+  },
+  {
+    id: 3,
+    title: "Ghost Rider",
+    category: "Trailers",
+    file: "/demos/trailer-ghost-rider.mp3",
+    description: "Ghost Rider theatrical trailer",
+    duration: "1:31",
+  },
+  {
+    id: 4,
+    title: "SAW II",
+    category: "Trailers",
+    file: "/demos/trailer-saw-2.mp3",
+    description: "SAW II theatrical trailer",
+    duration: "1:29",
+  },
+  {
+    id: 5,
+    title: "Curse of the Golden Flower",
+    category: "Trailers",
+    file: "/demos/trailer-curse-golden-flower.mp3",
+    description: "Feature film trailer",
+    duration: "0:53",
+  },
+  // Commercial
+  {
+    id: 6,
+    title: "Commercial Demo",
+    category: "Commercial",
+    file: "https://voice123.com/samples/Voice123%20-%20Commercial%20-%20Mark%20Aston.mp3",
+    description: "Commercial demo reel",
+    duration: "0:39",
+  },
+  {
+    id: 7,
+    title: "Six Flags — Terminator",
+    category: "Commercial",
+    file: "/demos/six-flags-terminator.mp3",
+    description: "Six Flags Terminator ride spot",
+    duration: "1:00",
+  },
+  {
+    id: 8,
+    title: "Funderland",
+    category: "Commercial",
+    file: "/demos/funderland.mp3",
+    description: "Funderland theme park spot",
+    duration: "0:22",
   },
   // Promo & Imaging
   {
-    id: 4,
+    id: 9,
     title: "CBS Primetime",
     category: "Promo & Imaging",
     file: "https://voice123.com/samples/Voice123%20-%20CBS%20Primetime%20-%20Mark%20Aston.mp3",
@@ -49,7 +89,7 @@ const demos: Demo[] = [
     duration: "1:15",
   },
   {
-    id: 5,
+    id: 10,
     title: "FOX Primetime",
     category: "Promo & Imaging",
     file: "https://voice123.com/samples/Voice123%20-%20FOX%20Primetime%20-%20Mark%20Aston.mp3",
@@ -57,7 +97,23 @@ const demos: Demo[] = [
     duration: "0:43",
   },
   {
-    id: 6,
+    id: 11,
+    title: "CBS Demo",
+    category: "Promo & Imaging",
+    file: "/demos/cbs-demo.mp3",
+    description: "CBS network imaging demo",
+    duration: "1:15",
+  },
+  {
+    id: 12,
+    title: "Promo Demo",
+    category: "Promo & Imaging",
+    file: "/demos/promo-demo.mp3",
+    description: "Network promo reel",
+    duration: "0:58",
+  },
+  {
+    id: 13,
     title: "Daytime Promos",
     category: "Promo & Imaging",
     file: "https://voice123.com/samples/Voice123%20-%20Daytime%20Promos%20-%20Mark%20Aston.mp3",
@@ -65,23 +121,7 @@ const demos: Demo[] = [
     duration: "0:36",
   },
   {
-    id: 7,
-    title: "2006 Promos",
-    category: "Promo & Imaging",
-    file: "https://voice123.com/samples/Voice123%20-%20Promos%20-%20Mark%20Aston.mp3",
-    description: "Promo reel from 2006",
-    duration: "0:58",
-  },
-  {
-    id: 8,
-    title: "Older Promos",
-    category: "Promo & Imaging",
-    file: "https://voice123.com/samples/Voice123%20-%20OLDER%20PROMOS%20-%20Mark%20Aston.mp3",
-    description: "Classic promo reel",
-    duration: "1:50",
-  },
-  {
-    id: 9,
+    id: 14,
     title: "Radio Imaging",
     category: "Promo & Imaging",
     file: "https://voice123.com/samples/Voice123%20-%20Radio%20imaging%20-%20Mark%20Aston.mp3",
@@ -90,7 +130,7 @@ const demos: Demo[] = [
   },
 ];
 
-const categories = ["All", "Commercial", "Promo & Imaging", "Trailers", "Narration", "Character"];
+const categories = ["All", "Trailers", "Commercial", "Promo & Imaging", "Narration", "Character"];
 
 // Stable waveform bar heights
 const waveformBars = Array.from({ length: 64 }, (_, i) => {
