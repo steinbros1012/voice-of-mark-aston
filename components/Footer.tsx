@@ -92,10 +92,11 @@ export default function Footer() {
             </div>
             <Link
               href="/contact"
-              className="inline-flex px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+              className="inline-flex px-5 py-2.5 text-sm font-semibold transition-all hover:opacity-80"
               style={{
                 border: "1px solid rgba(232,119,34,0.35)",
                 color: "var(--purple-light)",
+                borderRadius: 0,
               }}
             >
               Book a Session
@@ -106,7 +107,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div
           className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4"
-          style={{ borderTop: "1px solid rgba(3,36,77,0.5)" }}
+          style={{ borderTop: "1px solid var(--border-subtle)" }}
         >
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             &copy; {new Date().getFullYear()} Mark Aston. All rights reserved.

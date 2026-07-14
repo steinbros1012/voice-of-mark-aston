@@ -99,8 +99,8 @@ export default function Navbar() {
             ))}
             <Link
               href="/contact"
-              className="ml-4 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-200 hover:opacity-85"
-              style={{ background: "var(--purple)" }}
+              className="ml-4 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:opacity-85"
+              style={{ background: "var(--purple)", borderRadius: 0 }}
             >
               Book Now
             </Link>
@@ -146,8 +146,8 @@ export default function Navbar() {
             ))}
             <Link
               href="/contact"
-              className="mt-4 py-3 rounded-full text-sm font-semibold text-white text-center transition-colors"
-              style={{ background: "var(--purple)" }}
+              className="mt-4 py-3 text-sm font-semibold text-white text-center transition-colors"
+              style={{ background: "var(--purple)", borderRadius: 0 }}
             >
               Book Now
             </Link>

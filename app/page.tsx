@@ -68,17 +68,31 @@ function HeroPlayButton() {
       />
       <button
         onClick={toggle}
-        className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
-        style={{ background: "var(--purple)" }}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "13px 22px",
+          fontFamily: "var(--font-inter)",
+          fontSize: "11px",
+          fontWeight: 600,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase" as const,
+          color: "white",
+          background: "var(--purple)",
+          border: "none",
+          cursor: "pointer",
+          borderRadius: 0,
+        }}
       >
         {playing ? (
           <>
-            <Pause size={15} fill="white" />
+            <Pause size={14} fill="white" />
             Playing...
           </>
         ) : (
           <>
-            <Play size={15} fill="white" className="ml-0.5" />
+            <Play size={14} fill="white" />
             Hear the Voice
           </>
         )}
@@ -101,497 +115,306 @@ export default function HomePage() {
     <>
       <Navbar />
       <main className="flex-1">
+
         {/* ─── HERO ─── */}
-        <section
-          className="relative min-h-screen flex items-center overflow-hidden"
-          style={{ background: "var(--bg-base)" }}
-        >
-          {/* Radial purple glow */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse 90% 55% at 30% 0%, rgba(232,119,34,0.14) 0%, transparent 65%)",
-            }}
-          />
+        <section style={{ background: "var(--bg-base)", minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
 
-          {/* Animated sound bars — decorative background layer */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-            style={{ opacity: 0.25 }}
-          >
-            <SoundBars count={60} className="h-full w-full" />
-          </div>
+          {/* Text + photo */}
+          <div style={{ flex: 1, padding: "clamp(100px, 14vh, 140px) clamp(24px, 5vw, 72px) clamp(32px, 5vh, 56px)", position: "relative" }}>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full pt-28 pb-24">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-              {/* Text column */}
-              <div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex items-center gap-3 mb-8"
-                >
-                  <span
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em]"
-                    style={{
-                      border: "1px solid rgba(232,119,34,0.3)",
-                      color: "var(--purple-light)",
-                      background: "rgba(3,36,77,0.6)",
-                    }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{
-                        background: "var(--purple)",
-                        animation: "pulseRing 2s ease-out infinite",
-                      }}
-                    />
-                    SAG-AFTRA Talent
-                  </span>
-                  <span
-                    className="text-xs"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Atlanta, GA
-                  </span>
-                </motion.div>
+            {/* Eyebrow */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              style={{ fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.25em", textTransform: "uppercase", color: "var(--purple-light)", marginBottom: "clamp(20px, 4vh, 40px)" }}
+            >
+              SAG-AFTRA · Atlanta, GA
+            </motion.p>
 
-                <motion.p
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.07 }}
-                  className="text-xs font-semibold uppercase tracking-[0.32em] mb-3"
-                  style={{ color: "var(--purple-light)" }}
-                >
-                  The Voice Of
-                </motion.p>
+            {/* Name — MASSIVE */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.08 }}
+              style={{ lineHeight: 0.88, marginBottom: "clamp(24px, 4vh, 40px)" }}
+            >
+              <span style={{ display: "block", fontFamily: "var(--font-playfair)", fontSize: "clamp(72px, 15vw, 200px)", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.025em" }}>Mark</span>
+              <span style={{ display: "block", fontFamily: "var(--font-playfair)", fontSize: "clamp(72px, 15vw, 200px)", fontWeight: 900, color: "var(--purple)", letterSpacing: "-0.025em" }}>Aston</span>
+            </motion.h1>
 
-                <motion.h1
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.12 }}
-                  className="text-[clamp(4rem,10vw,7rem)] font-bold text-white leading-[0.92] tracking-tight mb-4"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  Mark<br />
-                  <em
-                    className="not-italic font-normal"
-                    style={{ color: "var(--purple-light)" }}
-                  >
-                    Aston
-                  </em>
-                </motion.h1>
+            {/* Tagline */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.22 }}
+              style={{ fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--text-muted)" }}
+            >
+              Powerful · Versatile · Unforgettable
+            </motion.p>
 
-                {/* 3-word descriptor */}
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.18 }}
-                  className="text-sm font-semibold tracking-[0.18em] uppercase mb-7"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  Powerful &middot; Versatile &middot; Unforgettable
-                </motion.p>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.22 }}
-                  className="text-base leading-relaxed max-w-md mb-10"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Twenty years of union voice work for CBS, Disney, Coca-Cola,
-                  and dozens of the world&apos;s most recognized brands.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="flex flex-wrap gap-3"
-                >
-                  {/* Hero play button — hear voice immediately */}
-                  <HeroPlayButton />
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
-                    style={{
-                      border: "1.5px solid rgba(232,119,34,0.3)",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    Book a Session
-                  </Link>
-                </motion.div>
+            {/* Photo — absolute bottom-right, hidden on small screens */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="hidden sm:block"
+              style={{ position: "absolute", right: "clamp(24px, 5vw, 72px)", bottom: 0, width: "clamp(150px, 18vw, 260px)" }}
+            >
+              <div style={{ position: "relative", width: "100%", paddingBottom: "140%", overflow: "hidden" }}>
+                <Image
+                  src="/images/mark-aston-v2.jpg"
+                  alt="Mark Aston"
+                  fill
+                  style={{ objectFit: "cover", objectPosition: "top center" }}
+                  sizes="260px"
+                  priority
+                />
+                {/* Gradient fade at bottom so it blends into sound bars */}
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "60%", background: "linear-gradient(to bottom, transparent, var(--bg-base))", pointerEvents: "none" }} />
               </div>
-
-              {/* Photo column */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.18 }}
-                className="flex justify-center lg:justify-end"
-              >
-                <div className="relative">
-                  {/* Ambient glow behind photo */}
+              {/* Small animated bars alongside photo */}
+              <div style={{ position: "absolute", left: "-14px", top: "30%", display: "flex", flexDirection: "column", gap: "3px", width: "8px", height: "64px" }}>
+                {Array.from({ length: 6 }).map((_, i) => (
                   <div
-                    className="absolute -inset-10 rounded-full blur-3xl pointer-events-none"
+                    key={i}
                     style={{
+                      flex: 1,
                       background: "var(--purple)",
-                      opacity: 0.12,
+                      opacity: 0.4 + (i % 3) * 0.18,
+                      animation: `soundBar ${0.7 + i * 0.14}s ease-in-out ${i * 0.1}s infinite`,
                     }}
                   />
-
-                  {/* Photo */}
-                  <div
-                    className="relative w-[300px] h-[380px] sm:w-[340px] sm:h-[430px] rounded-2xl overflow-hidden"
-                    style={{
-                      boxShadow:
-                        "0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(232,119,34,0.18)",
-                    }}
-                  >
-                    <Image
-                      src="/images/mark-aston-v2.jpg"
-                      alt="Mark Aston, Voice Over Actor"
-                      fill
-                      className="object-cover object-top"
-                      priority
-                      sizes="(max-width: 640px) 300px, 340px"
-                    />
-                  </div>
-
-                  {/* Equalizer bars alongside photo */}
-                  <div
-                    className="absolute -right-5 top-1/2 -translate-y-1/2 flex flex-col gap-1"
-                    style={{ width: "12px", height: "120px" }}
-                  >
-                    {Array.from({ length: 7 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="rounded-full flex-1 origin-bottom"
-                        style={{
-                          background: "var(--purple-light)",
-                          opacity: 0.25 + (i % 3) * 0.12,
-                          animation: `soundBar ${0.85 + i * 0.17}s ease-in-out ${i * 0.11}s infinite`,
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* SAG-AFTRA badge */}
-                  <div
-                    className="absolute -bottom-4 -left-4 rounded-xl px-4 py-3"
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border)",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-                    }}
-                  >
-                    <p
-                      className="text-[9px] font-semibold uppercase tracking-[0.14em]"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      Union Member
-                    </p>
-                    <p className="text-sm font-bold text-white">SAG-AFTRA</p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
 
-          {/* Bottom fade into next section */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent, var(--bg-surface))",
-            }}
-          />
-        </section>
+          {/* Sound bars — full bleed */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, delay: 0.4 }}
+            style={{ width: "100%", height: "clamp(120px, 18vh, 200px)", flexShrink: 0 }}
+          >
+            <SoundBars count={60} className="h-full w-full" color="#E87722" minOpacity={0.18} maxOpacity={0.72} />
+          </motion.div>
 
-        {/* ─── STATS BAR ─── */}
-        <section
-          style={{
-            background: "var(--bg-surface)",
-            borderBottom: "1px solid var(--border)",
-          }}
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="text-center"
-                >
-                  <p
-                    className="text-2xl sm:text-3xl font-bold text-white mb-1"
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
-                    {stat.value}
-                  </p>
-                  <p
-                    className="text-[10px] uppercase tracking-[0.14em]"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {stat.label}
-                  </p>
-                </motion.div>
+          {/* Bottom stats + CTA strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            style={{ borderTop: "1px solid var(--border)", padding: "clamp(20px, 3vh, 28px) clamp(24px, 5vw, 72px) clamp(32px, 5vh, 48px)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}
+          >
+            {/* Stats */}
+            <div style={{ display: "flex", gap: "clamp(20px, 4vw, 48px)", flexWrap: "wrap" }}>
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <p style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(22px, 2.5vw, 32px)", fontWeight: 900, color: "white", lineHeight: 1 }}>{stat.value}</p>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "9px", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: "3px" }}>{stat.label}</p>
+                </div>
               ))}
             </div>
-          </div>
+
+            {/* CTAs */}
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <HeroPlayButton />
+              <Link
+                href="/contact"
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "13px 22px", fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--text-secondary)", border: "1px solid var(--border-subtle)", textDecoration: "none" }}
+              >
+                Book a Session
+              </Link>
+            </div>
+          </motion.div>
         </section>
 
-        {/* ─── CLIENT LOGOS MARQUEE ─── */}
-        <section
-          style={{ background: "var(--bg-base)" }}
-          className="py-14"
-        >
+        {/* ─── CREDITS MARQUEE ─── */}
+        <section style={{ background: "var(--bg-surface)", borderTop: "1px solid var(--border-subtle)", borderBottom: "1px solid var(--border-subtle)", padding: "clamp(40px, 6vw, 64px) 0" }}>
           <p
-            className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] mb-8"
-            style={{ color: "var(--text-muted)" }}
+            style={{ textAlign: "center", fontFamily: "var(--font-inter)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "32px" }}
           >
-            Clients include
+            Credits include
           </p>
           <LogoMarquee />
         </section>
 
-        {/* ─── FEATURED DEMO PLAYER ─── */}
-        <section
-          className="py-20 sm:py-28"
-          style={{
-            background: "var(--bg-surface)",
-            borderTop: "1px solid var(--border)",
-          }}
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
-              {/* Left — copy */}
-              <div className="lg:sticky lg:top-24">
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                  style={{ color: "var(--purple-light)" }}
-                >
-                  Voice Demos
-                </motion.p>
-                <motion.h2
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  Hear the{" "}
-                  <em
-                    className="not-italic font-normal"
-                    style={{ color: "var(--purple-light)" }}
-                  >
-                    voice
-                  </em>
-                </motion.h2>
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="text-base leading-relaxed max-w-sm mb-8"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Commercial. Narration. Character. Promo. Browse every category
-                  and find the right sound for your project.
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.18 }}
-                >
-                  <Link
-                    href="/demos"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:opacity-70"
-                    style={{ color: "var(--purple-light)" }}
-                  >
-                    All demos <ArrowRight size={14} />
-                  </Link>
-                </motion.div>
-              </div>
-
-              {/* Right — audio player */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <AudioPlayer />
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── SERVICES ─── */}
-        <section
-          style={{ background: "var(--bg-base)" }}
-          className="py-20 sm:py-28"
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-4"
-                style={{ color: "var(--purple-light)" }}
-              >
-                What I Do
-              </motion.p>
-              <motion.h2
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-3xl sm:text-4xl font-bold text-white"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
-                Services
-              </motion.h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {services.map((service, i) => {
-                const Icon = service.icon;
-                return (
-                  <motion.div
-                    key={service.title}
-                    custom={i}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={fadeUp}
-                    className="p-8 rounded-2xl transition-all duration-300 hover:border-purple-500/20"
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border)",
-                    }}
-                  >
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-6"
-                      style={{ background: "rgba(232,119,34,0.1)" }}
-                    >
-                      <Icon size={20} style={{ color: "var(--purple-light)" }} />
-                    </div>
-                    <h3 className="text-sm font-bold text-white mb-3">
-                      {service.title}
-                    </h3>
-                    <p
-                      className="text-sm leading-relaxed mb-5"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      {service.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {service.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wide"
-                          style={{
-                            background: "rgba(3,36,77,0.6)",
-                            color: "var(--text-muted)",
-                            border: "1px solid rgba(232,119,34,0.1)",
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ─── CTA ─── */}
-        <section
-          className="py-24 sm:py-32 relative overflow-hidden"
-          style={{
-            background: "var(--bg-surface)",
-            borderTop: "1px solid var(--border)",
-          }}
-        >
-          {/* Purple ambient glow */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 75% at 50% 50%, rgba(232,119,34,0.12) 0%, transparent 70%)",
-            }}
-          />
-          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
+        {/* ─── DEMOS ─── */}
+        <section style={{ background: "var(--bg-base)", padding: "clamp(72px, 10vw, 120px) clamp(24px, 5vw, 72px)" }}>
+          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-6"
-              style={{ color: "var(--purple-light)" }}
+              style={{ fontFamily: "var(--font-inter)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--purple-light)", marginBottom: "16px" }}
             >
-              Ready to work together?
+              Voice Demos
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight"
-              style={{ fontFamily: "var(--font-playfair)" }}
+              style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, color: "white", lineHeight: 0.92, letterSpacing: "-0.03em", marginBottom: "20px" }}
             >
-              Let&apos;s work together
+              Hear the{" "}
+              <em style={{ fontStyle: "normal", color: "var(--purple)" }}>Voice</em>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-base leading-relaxed max-w-lg mx-auto mb-10"
-              style={{ color: "var(--text-secondary)" }}
+              style={{ fontFamily: "var(--font-inter)", fontSize: "15px", lineHeight: 1.75, color: "var(--text-secondary)", maxWidth: "480px" }}
             >
-              Quick turnaround. Union quality. Response within 24 hours, often
-              within the hour.
+              Commercial. Narration. Character. Promo. Twenty years of work for the networks and brands you know.
             </motion.p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.18 }}
+              style={{ display: "flex", alignItems: "center", marginBottom: "48px" }}
+            >
+              <Link
+                href="/demos"
+                style={{ color: "var(--purple-light)", fontSize: "12px", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "20px" }}
+              >
+                All demos <ArrowRight size={13} />
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <AudioPlayer />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ─── SERVICES (editorial numbered list) ─── */}
+        <section style={{ background: "var(--bg-surface)", borderTop: "1px solid var(--border-subtle)", padding: "clamp(72px, 10vw, 120px) clamp(24px, 5vw, 72px)" }}>
+          <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+            {/* Header row */}
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "24px", marginBottom: "clamp(48px, 6vw, 72px)" }}>
+              <div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  style={{ fontFamily: "var(--font-inter)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--purple-light)", marginBottom: "12px" }}
+                >
+                  What I Do
+                </motion.p>
+                <motion.h2
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(36px, 5vw, 64px)", fontWeight: 900, color: "white", lineHeight: 0.95, letterSpacing: "-0.02em" }}
+                >
+                  Services
+                </motion.h2>
+              </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                style={{ paddingTop: "4px" }}
+              >
+                <Link
+                  href="/contact"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "13px 22px", fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "white", background: "var(--purple)", textDecoration: "none" }}
+                >
+                  Book Now <ArrowRight size={13} />
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Numbered list */}
+            {services.map((service, i) => {
+              const Icon = service.icon;
+              return (
+                <motion.div
+                  key={service.title}
+                  custom={i}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  style={{ display: "grid", gridTemplateColumns: "clamp(48px, 6vw, 80px) 1fr", gap: "clamp(16px, 3vw, 40px)", alignItems: "start", padding: "clamp(28px, 4vw, 44px) 0", borderTop: "1px solid var(--border-subtle)" }}
+                >
+                  <span style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "var(--text-muted)", lineHeight: 1, opacity: 0.5 }}>
+                    0{i + 1}
+                  </span>
+
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+                      <Icon size={16} style={{ color: "var(--purple)", flexShrink: 0 }} />
+                      <h3 style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(20px, 2.5vw, 30px)", fontWeight: 700, color: "white", lineHeight: 1.1 }}>{service.title}</h3>
+                    </div>
+                    <p style={{ fontFamily: "var(--font-inter)", fontSize: "14px", lineHeight: 1.75, color: "var(--text-secondary)", maxWidth: "480px", marginBottom: "14px" }}>{service.description}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {service.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          style={{ fontFamily: "var(--font-inter)", fontSize: "9px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", padding: "4px 10px", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+            <div style={{ borderTop: "1px solid var(--border-subtle)" }} />
+          </div>
+        </section>
+
+        {/* ─── CTA ─── */}
+        <section style={{ background: "var(--bg-base)", borderTop: "1px solid var(--border)", padding: "clamp(80px, 12vw, 160px) clamp(24px, 5vw, 72px)" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              style={{ fontFamily: "var(--font-inter)", fontSize: "10px", fontWeight: 600, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--purple-light)", marginBottom: "20px" }}
+            >
+              Ready to Work Together?
+            </motion.p>
+            <motion.h2
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(44px, 8vw, 110px)", fontWeight: 900, color: "white", lineHeight: 0.9, letterSpacing: "-0.035em", marginBottom: "clamp(36px, 5vw, 60px)", maxWidth: "800px" }}
+            >
+              Let&apos;s make something unforgettable.
+            </motion.h2>
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-wrap justify-center gap-4"
+              transition={{ delay: 0.15 }}
+              style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}
             >
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white transition-all hover:opacity-85"
-                style={{ background: "var(--purple)" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "16px 32px", fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "white", background: "var(--purple)", textDecoration: "none" }}
               >
-                Book a Session <ArrowRight size={15} />
+                Book a Session <ArrowRight size={14} />
               </Link>
               <Link
                 href="/demos"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:bg-white/5"
-                style={{
-                  border: "1.5px solid rgba(232,119,34,0.3)",
-                  color: "var(--text-secondary)",
-                }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "16px 32px", fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--text-secondary)", border: "1px solid var(--border)", textDecoration: "none" }}
               >
                 Hear the Demos
               </Link>
             </motion.div>
           </div>
         </section>
+
       </main>
       <Footer />
     </>
