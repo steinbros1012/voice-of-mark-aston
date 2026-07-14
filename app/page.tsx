@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import SoundBars from "@/components/SoundBars";
 import AudioPlayer from "@/components/AudioPlayer";
 import LogoMarquee from "@/components/LogoMarquee";
+import VideoShowcase from "@/components/VideoShowcase";
 
 const services = [
   {
@@ -240,7 +241,50 @@ export default function HomePage() {
           <LogoMarquee />
         </section>
 
-        {/* ─── DEMOS ─── */}
+        {/* ─── FEATURED VIDEOS ─── */}
+        <section style={{ background: "var(--bg-base)", padding: "clamp(72px, 10vw, 120px) clamp(24px, 5vw, 72px)" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "clamp(40px, 5vw, 64px)", flexWrap: "wrap", gap: "20px" }}>
+              <div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  style={{ fontFamily: "var(--font-inter)", fontSize: "10px", fontWeight: 700, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--purple-light)", marginBottom: "12px" }}
+                >
+                  Broadcast Work
+                </motion.p>
+                <motion.h2
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(40px, 7vw, 88px)", fontWeight: 900, color: "white", lineHeight: 0.92, letterSpacing: "-0.03em" }}
+                >
+                  See the{" "}
+                  <em style={{ fontStyle: "normal", color: "var(--purple)" }}>Work</em>
+                </motion.h2>
+              </div>
+              <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+                <Link
+                  href="/demos#videos"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 600, letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--purple-light)", textDecoration: "none" }}
+                >
+                  All videos <ArrowRight size={13} />
+                </Link>
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <VideoShowcase limit={6} />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ─── AUDIO DEMOS ─── */}
         <section style={{ background: "var(--bg-base)", padding: "clamp(72px, 10vw, 120px) clamp(24px, 5vw, 72px)" }}>
           <div style={{ maxWidth: "900px", margin: "0 auto" }}>
             <motion.p

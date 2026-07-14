@@ -176,15 +176,16 @@ function VideoModal({ video, onClose }: { video: VideoItem; onClose: () => void 
   );
 }
 
-export default function VideoShowcase() {
+export default function VideoShowcase({ limit }: { limit?: number } = {}) {
   const [active, setActive] = useState<VideoItem | null>(null);
+  const displayed = limit ? videos.slice(0, limit) : videos;
 
   return (
     <>
       {active && <VideoModal video={active} onClose={() => setActive(null)} />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {videos.map((v) => (
+        {displayed.map((v) => (
           <button
             key={v.id}
             onClick={() => setActive(v)}

@@ -68,21 +68,71 @@ export default function DemosPage() {
           </div>
         </section>
 
-        {/* Player */}
-        <section className="py-20 sm:py-28">
-          <div className="max-w-3xl mx-auto px-6 lg:px-8">
+        {/* Jump nav */}
+        <div style={{ background: "var(--bg-surface)", borderBottom: "1px solid var(--border)" }}>
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="flex gap-0">
+              <a
+                href="#videos"
+                className="px-6 py-4 text-sm font-semibold transition-colors"
+                style={{ color: "white", borderBottom: "2px solid var(--purple)" }}
+              >
+                Videos
+              </a>
+              <a
+                href="#audio"
+                className="px-6 py-4 text-sm font-semibold transition-colors hover:text-white"
+                style={{ color: "var(--text-secondary)", borderBottom: "2px solid transparent" }}
+              >
+                Audio
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Video Showcase — first */}
+        <section
+          id="videos"
+          className="py-20 sm:py-28"
+          style={{ background: "var(--bg-base)" }}
+        >
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="mb-12">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3"
+                style={{ color: "var(--purple-light)" }}
+              >
+                Broadcast Work
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-tight"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                See the work{" "}
+                <em className="not-italic font-normal" style={{ color: "var(--purple-light)" }}>
+                  in action
+                </em>
+              </motion.h2>
+            </div>
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <AudioPlayer />
+              <VideoShowcase />
             </motion.div>
           </div>
         </section>
 
-        {/* Video Showcase */}
+        {/* Audio — second */}
         <section
+          id="audio"
           className="py-20 sm:py-28"
           style={{
             background: "var(--bg-surface)",
@@ -98,7 +148,7 @@ export default function DemosPage() {
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] mb-3"
                 style={{ color: "var(--purple-light)" }}
               >
-                Broadcast Work
+                Voice Demos
               </motion.p>
               <motion.h2
                 initial={{ opacity: 0, y: 16 }}
@@ -108,7 +158,10 @@ export default function DemosPage() {
                 className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                See the work in action
+                Hear the{" "}
+                <em className="not-italic font-normal" style={{ color: "var(--purple-light)" }}>
+                  voice
+                </em>
               </motion.h2>
             </div>
             <motion.div
@@ -117,7 +170,9 @@ export default function DemosPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <VideoShowcase />
+              <div className="max-w-3xl">
+                <AudioPlayer />
+              </div>
             </motion.div>
           </div>
         </section>
