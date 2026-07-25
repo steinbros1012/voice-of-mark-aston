@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 
 // --- Rate limiting (in-memory, per IP, 5 requests per minute) ---
 interface RateLimitEntry {
@@ -104,25 +103,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Send email
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailPassword = process.env.GMAIL_APP_PASSWORD;
-  const contactEmail = process.env.CONTACT_EMAIL ?? "steinbros1012@gmail.com";
+  // Send email via Resend (https://resend.com) — set RESEND_API_KEY in Vercel.
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const contactEmail = process.env.CONTACT_EMAIL ?? "Mark10aston@gmail.com";
+  // Optional CC recipients — comma-separated list in CONTACT_CC (e.g. for
+  // keeping the site owner copied on every inquiry).
+  const ccList = (process.env.CONTACT_CC ?? "")
+    .split(",")
+    .map((addr) => addr.trim())
+    .filter(Boolean);
+  // Resend's shared test sender works out of the box (deliverable only to the
+  // account owner's address). Set CONTACT_FROM to a verified-domain address for
+  // production sending to any recipient.
+  const fromAddress =
+    process.env.CONTACT_FROM ?? "VOMA Website <onboarding@resend.dev>";
 
-  if (!gmailUser || !gmailPassword) {
+  if (!resendApiKey) {
     return NextResponse.json(
       { error: "Mail service is not configured." },
       { status: 503 }
     );
   }
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailPassword,
-    },
-  });
 
   const emailBody = `
 New booking inquiry from The Voice of Mark Aston website.
@@ -174,14 +175,29 @@ Submitted from IP: ${ip}
 `.trim();
 
   try {
-    await transporter.sendMail({
-      from: `"VOMA Website" <${gmailUser}>`,
-      to: contactEmail,
-      replyTo: email,
-      subject: `New Booking Inquiry — ${name} (${projectType})`,
-      text: emailBody,
-      html: htmlBody,
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: [contactEmail],
+        ...(ccList.length > 0 ? { cc: ccList } : {}),
+        reply_to: email,
+        subject: `New Booking Inquiry — ${name} (${projectType})`,
+        text: emailBody,
+        html: htmlBody,
+      }),
     });
+
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      throw new Error(
+        `Resend returned ${res.status}${detail ? `: ${detail}` : ""}`
+      );
+    }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err: unknown) {
