@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   // Send email
   const gmailUser = process.env.GMAIL_USER;
   const gmailPassword = process.env.GMAIL_APP_PASSWORD;
-  const contactEmail = process.env.CONTACT_EMAIL ?? "steinbros1012@gmail.com";
+  const contactEmail = process.env.CONTACT_EMAIL ?? "Mark10aston@gmail.com";
 
   if (!gmailUser || !gmailPassword) {
     return NextResponse.json(
