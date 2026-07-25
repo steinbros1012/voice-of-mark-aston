@@ -91,18 +91,18 @@ export default function AboutPage() {
                 >
                   <p>
                     Mark Aston is a SAG-AFTRA voice over actor and announcer
-                    based in Atlanta, Georgia. Over the past two decades, he has
-                    worked with some of the most recognizable brands out there,
-                    including CBS, Disney, Coca-Cola, and Walmart.
+                    based in Atlanta, Georgia. For the past two decades, he has
+                    worked with some of the most recognizable brands, including
+                    CBS, Disney, Coca-Cola, and Walmart.
                   </p>
                   <p>
-                    His voice is powerful and versatile. Whether it&apos;s a
-                    30-second commercial, a feature-length documentary, or a
-                    theme park experience, Mark delivers with precision and
-                    consistent union-level quality.
+                    His voice is powerful and versatile. Whether a 30-second
+                    commercial, a feature-length documentary, or a theme park
+                    experience, Mark delivers with precision and consistent
+                    union-level quality.
                   </p>
                   <p>
-                    Quick turnaround is the standard — delivery within one day,
+                    Quick turnaround is the standard - delivery within one day,
                     and often within the hour.
                   </p>
                 </motion.div>
@@ -229,7 +229,7 @@ export default function AboutPage() {
                       size={17}
                       style={{ color: "var(--purple-light)", flexShrink: 0 }}
                     />
-                    <span className="text-sm font-medium text-white">{item}</span>
+                    <span className="text-base font-medium text-white">{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -247,7 +247,7 @@ export default function AboutPage() {
           }}
         >
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center mb-16">
+            <div className="mb-12">
               <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -265,7 +265,7 @@ export default function AboutPage() {
                 className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                How people describe it
+                How people<br />describe it
               </motion.h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
