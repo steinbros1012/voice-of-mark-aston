@@ -106,6 +106,12 @@ export async function POST(request: NextRequest) {
   // Send email via Resend (https://resend.com) — set RESEND_API_KEY in Vercel.
   const resendApiKey = process.env.RESEND_API_KEY;
   const contactEmail = process.env.CONTACT_EMAIL ?? "Mark10aston@gmail.com";
+  // Optional CC recipients — comma-separated list in CONTACT_CC (e.g. for
+  // keeping the site owner copied on every inquiry).
+  const ccList = (process.env.CONTACT_CC ?? "")
+    .split(",")
+    .map((addr) => addr.trim())
+    .filter(Boolean);
   // Resend's shared test sender works out of the box (deliverable only to the
   // account owner's address). Set CONTACT_FROM to a verified-domain address for
   // production sending to any recipient.
@@ -178,6 +184,7 @@ Submitted from IP: ${ip}
       body: JSON.stringify({
         from: fromAddress,
         to: [contactEmail],
+        ...(ccList.length > 0 ? { cc: ccList } : {}),
         reply_to: email,
         subject: `New Booking Inquiry — ${name} (${projectType})`,
         text: emailBody,
