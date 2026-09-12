@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, X } from "lucide-react";
 
@@ -8,110 +8,104 @@ interface VideoItem {
   id: number;
   title: string;
   category: string;
-  description: string;
-  duration: string;
-  file: string;
-  thumb: string;
+  youtubeId: string;
 }
 
 const videos: VideoItem[] = [
   {
     id: 1,
-    title: "Ghostbusters",
-    category: "Movie Trailer",
-    description: "Ghostbusters theatrical trailer",
-    duration: "2:37",
-    file: "/videos/ghostbusters.mp4",
-    thumb: "/videos/thumbs/ghostbusters.jpg",
+    title: "Thompson Tractor — Auburn vs. Arkansas",
+    category: "Sponsored Content",
+    youtubeId: "cka-b5jq064",
   },
   {
     id: 2,
-    title: "Six Flags — X2",
-    category: "Theme Park",
-    description: "Six Flags X2 roller coaster spot",
-    duration: "0:54",
-    file: "/videos/sixflags-x2.mp4",
-    thumb: "/videos/thumbs/sixflags-x2.jpg",
+    title: "Thompson Tractor — Auburn vs. Tennessee",
+    category: "Sponsored Content",
+    youtubeId: "J0X8yuVrQzo",
   },
   {
     id: 3,
-    title: "Six Flags — Bizarro",
-    category: "Theme Park",
-    description: "Six Flags Bizarro ride spot",
-    duration: "0:32",
-    file: "/videos/sixflags-bizarro.mp4",
-    thumb: "/videos/thumbs/sixflags-bizarro.jpg",
+    title: "Thompson Tractor — Auburn vs. ASU",
+    category: "Sponsored Content",
+    youtubeId: "IKNvf5tcHPc",
   },
   {
     id: 4,
-    title: "Dark Fields",
-    category: "Movie Trailer",
-    description: "Feature film trailer",
-    duration: "1:28",
-    file: "/videos/dark-fields.mp4",
-    thumb: "/videos/thumbs/dark-fields.jpg",
+    title: "STOBAG",
+    category: "Commercial",
+    youtubeId: "X7WpkukEw2k",
   },
   {
     id: 5,
-    title: "Nokia",
+    title: "AMC Classics",
     category: "Commercial",
-    description: "Nokia national TV commercial",
-    duration: "0:22",
-    file: "/videos/nokia-commercial.mp4",
-    thumb: "/videos/thumbs/nokia-commercial.jpg",
+    youtubeId: "rOVC1lxPlso",
   },
   {
     id: 6,
-    title: "Auburn vs. UNC Hype",
-    category: "Sports Imaging",
-    description: "Auburn Tigers football hype reel",
-    duration: "1:11",
-    file: "/videos/auburn-vs-unc.mp4",
-    thumb: "/videos/thumbs/auburn-vs-unc.jpg",
+    title: "McDonald's Breakfast",
+    category: "Commercial",
+    youtubeId: "GO426lLklq8",
   },
   {
     id: 7,
-    title: "College World Series",
-    category: "Sports Imaging",
-    description: "CWS hype package",
-    duration: "0:37",
-    file: "/videos/cws-hype.mp4",
-    thumb: "/videos/thumbs/cws-hype.jpg",
+    title: "Advil",
+    category: "Commercial",
+    youtubeId: "j7PJK14UmZQ",
   },
   {
     id: 8,
-    title: "Thompson Tractor — Auburn vs. LSU",
-    category: "Sponsored Content",
-    description: "Sponsored broadcast spot",
-    duration: "1:15",
-    file: "/videos/thompson-tractor.mp4",
-    thumb: "/videos/thumbs/thompson-tractor.jpg",
+    title: "FightDirty.Org",
+    category: "Commercial",
+    youtubeId: "yecZkN9LtXk",
   },
   {
     id: 9,
-    title: "Sam Cerio Promo",
+    title: "By the Numbers — Ryan Davis",
     category: "Sports Imaging",
-    description: "Athlete feature promo",
-    duration: "0:27",
-    file: "/videos/sam-cerio.mp4",
-    thumb: "/videos/thumbs/sam-cerio.jpg",
+    youtubeId: "eeSolWQHLN8",
   },
   {
     id: 10,
-    title: "Cody Greenhill — Season Tickets",
+    title: "Baseball Friday Intro — Auburn vs. South Carolina",
     category: "Sports Imaging",
-    description: "Season ticket campaign promo",
-    duration: "0:30",
-    file: "/videos/cody-greenhill.mp4",
-    thumb: "/videos/thumbs/cody-greenhill.jpg",
+    youtubeId: "pcDnTpp_tCE",
+  },
+  {
+    id: 11,
+    title: "Diesel Equipment Technology",
+    category: "Commercial",
+    youtubeId: "IukcTd7aEQo",
+  },
+  {
+    id: 12,
+    title: "Baseball Friday Intro — 8FRM Sync",
+    category: "Sports Imaging",
+    youtubeId: "oys1AykB3I4",
+  },
+  {
+    id: 13,
+    title: "Auburn Baseball '17 Intro",
+    category: "Sports Imaging",
+    youtubeId: "l1tAekrsMyo",
+  },
+  {
+    id: 14,
+    title: "Mercedes-Benz Intuition",
+    category: "Commercial",
+    youtubeId: "iKc7tRdOoYk",
+  },
+  {
+    id: 15,
+    title: "Auburn Football Review Promo",
+    category: "Sports Imaging",
+    youtubeId: "Wp43YHeudec",
   },
 ];
 
 function VideoModal({ video, onClose }: { video: VideoItem; onClose: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
-    videoRef.current?.play();
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
@@ -146,30 +140,23 @@ function VideoModal({ video, onClose }: { video: VideoItem; onClose: () => void 
             boxShadow: "0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,119,34,0.15)",
           }}
         >
-          <video
-            ref={videoRef}
-            src={video.file}
-            controls
-            className="w-full h-full object-cover"
-            style={{ background: "#000" }}
+          <iframe
+            src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+            style={{ border: "none", background: "#000" }}
           />
         </div>
-        <div className="mt-4 flex items-start justify-between">
-          <div>
-            <p
-              className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-1"
-              style={{ color: "var(--purple-light)" }}
-            >
-              {video.category}
-            </p>
-            <h3 className="text-base font-bold text-white">{video.title}</h3>
-          </div>
-          <span
-            className="text-xs font-mono mt-1"
-            style={{ color: "var(--text-muted)" }}
+        <div className="mt-4">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-1"
+            style={{ color: "var(--purple-light)" }}
           >
-            {video.duration}
-          </span>
+            {video.category}
+          </p>
+          <h3 className="text-base font-bold text-white">{video.title}</h3>
         </div>
       </div>
     </div>
@@ -198,7 +185,7 @@ export default function VideoShowcase({ limit }: { limit?: number } = {}) {
             {/* Thumbnail */}
             <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
               <Image
-                src={v.thumb}
+                src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`}
                 alt={v.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -223,17 +210,6 @@ export default function VideoShowcase({ limit }: { limit?: number } = {}) {
                 >
                   <Play size={20} fill="white" className="text-white ml-1" />
                 </div>
-              </div>
-              {/* Duration badge */}
-              <div
-                className="absolute bottom-3 right-3 px-2 py-0.5 rounded text-[10px] font-mono"
-                style={{
-                  background: "rgba(0,0,0,0.7)",
-                  color: "rgba(255,255,255,0.8)",
-                  backdropFilter: "blur(4px)",
-                }}
-              >
-                {v.duration}
               </div>
             </div>
 
