@@ -9,11 +9,15 @@ interface VideoItem {
   title: string;
   category: string;
   youtubeId?: string;
-  vimeoPath?: string;
+  vimeoId?: string;
+  vimeoHash?: string;
 }
 
 function getEmbedUrl(v: VideoItem): string {
-  if (v.vimeoPath) return `https://player.vimeo.com/video/${v.vimeoPath}?autoplay=1`;
+  if (v.vimeoId) {
+    const hash = v.vimeoHash ? `?h=${v.vimeoHash}&autoplay=1` : `?autoplay=1`;
+    return `https://player.vimeo.com/video/${v.vimeoId}${hash}`;
+  }
   return `https://www.youtube.com/embed/${v.youtubeId}?autoplay=1&rel=0`;
 }
 
@@ -27,13 +31,15 @@ const videos: VideoItem[] = [
     id: 16,
     title: "September :30 — Jeep",
     category: "Commercial",
-    vimeoPath: "appleyardagency/september-jeep",
+    vimeoId: "1225754973",
+    vimeoHash: "2c64c55034",
   },
   {
     id: 17,
     title: "September :30 — Ram",
     category: "Commercial",
-    vimeoPath: "appleyardagency/september-ram",
+    vimeoId: "1225755602",
+    vimeoHash: "d037428f0c",
   },
   {
     id: 1,
