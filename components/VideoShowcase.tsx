@@ -8,10 +8,33 @@ interface VideoItem {
   id: number;
   title: string;
   category: string;
-  youtubeId: string;
+  youtubeId?: string;
+  vimeoPath?: string;
+}
+
+function getEmbedUrl(v: VideoItem): string {
+  if (v.vimeoPath) return `https://player.vimeo.com/video/${v.vimeoPath}?autoplay=1`;
+  return `https://www.youtube.com/embed/${v.youtubeId}?autoplay=1&rel=0`;
+}
+
+function getThumbnailUrl(v: VideoItem): string | null {
+  if (v.youtubeId) return `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`;
+  return null;
 }
 
 const videos: VideoItem[] = [
+  {
+    id: 16,
+    title: "September :30 — Jeep",
+    category: "Commercial",
+    vimeoPath: "appleyardagency/september-jeep",
+  },
+  {
+    id: 17,
+    title: "September :30 — Ram",
+    category: "Commercial",
+    vimeoPath: "appleyardagency/september-ram",
+  },
   {
     id: 1,
     title: "Thompson Tractor — Auburn vs. Arkansas",
@@ -141,9 +164,9 @@ function VideoModal({ video, onClose }: { video: VideoItem; onClose: () => void 
           }}
         >
           <iframe
-            src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
+            src={getEmbedUrl(video)}
             title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
             allowFullScreen
             className="w-full h-full"
             style={{ border: "none", background: "#000" }}
@@ -183,14 +206,16 @@ export default function VideoShowcase({ limit }: { limit?: number } = {}) {
             }}
           >
             {/* Thumbnail */}
-            <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
-              <Image
-                src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`}
-                alt={v.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
+            <div className="relative overflow-hidden" style={{ aspectRatio: "16/9", background: "#111" }}>
+              {getThumbnailUrl(v) && (
+                <Image
+                  src={getThumbnailUrl(v)!}
+                  alt={v.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              )}
               {/* Dark overlay */}
               <div
                 className="absolute inset-0 transition-opacity duration-300"
