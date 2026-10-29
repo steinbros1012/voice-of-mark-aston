@@ -1,10 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import type { Beep, Profile, TablesInsert, TripType } from '@/types/database';
 
-export type BeepDriver = Pick<Profile, 'id' | 'display_name' | 'avatar_url' | 'average_rating' | 'rating_count' | 'rides_given'>;
+export type BeepDriver = Pick<Profile, 'id' | 'display_name' | 'avatar_url' | 'average_rating' | 'rating_count' | 'rides_given' | 'plus_active'>;
 export type BeepWithDriver = Beep & { driver: BeepDriver };
 
-const BEEP_WITH_DRIVER = '*, driver:profiles!beeps_driver_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_given)';
+const BEEP_WITH_DRIVER = '*, driver:profiles!beeps_driver_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_given, plus_active)';
 
 export type TimeOfDay = 'any' | 'morning' | 'afternoon' | 'evening';
 export type DateRange = 'any' | 'today' | 'tomorrow' | 'week' | 'weekend';
@@ -87,7 +87,20 @@ export async function listBeeps(universityId: string, filters: BeepFilters = {})
   const timeOfDay = filters.timeOfDay ?? 'any';
   const seats = filters.seats ?? 1;
   // Time-of-day depends on the device time zone, so it is applied client-side.
-  return data.filter((b) => matchesTimeOfDay(b.departure_at, timeOfDay) && seatsLeft(b) >= seats);
+  const matches = data.filter((b) => matchesTimeOfDay(b.departure_at, timeOfDay) && seatsLeft(b) >= seats);
+  return withPremiumPlacement(matches);
+}
+
+/** Beep Me Plus perk for drivers: their rides lead the day they depart. */
+export function withPremiumPlacement(beeps: BeepWithDriver[]): BeepWithDriver[] {
+  const dayKey = (iso: string) => new Date(iso).toDateString();
+  return [...beeps].sort((a, b) => {
+    const dayA = dayKey(a.departure_at);
+    const dayB = dayKey(b.departure_at);
+    if (dayA !== dayB) return new Date(a.departure_at).getTime() - new Date(b.departure_at).getTime();
+    if (a.driver.plus_active !== b.driver.plus_active) return a.driver.plus_active ? -1 : 1;
+    return new Date(a.departure_at).getTime() - new Date(b.departure_at).getTime();
+  });
 }
 
 export async function getBeep(id: string): Promise<BeepWithDriver | null> {

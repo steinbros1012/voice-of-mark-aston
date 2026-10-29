@@ -3,17 +3,18 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Avatar, Button, Card, EmptyState, ErrorState, FormError, LoadingState, RequestStatusPill, Screen, Text, VerifiedPill } from '@/components/ui';
+import { Avatar, Button, Card, EmptyState, ErrorState, FormError, LoadingState, Notice, RequestStatusPill, Screen, Text, VerifiedPill } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
-import { describeAuthError } from '@/features/auth';
+import { describeAuthError, useAuth } from '@/features/auth';
 import { getBeep, RideSummary, seatsLeft } from '@/features/beeps';
-import { listRequestsForBeep, setRequestStatus, type SeatRequestDetail } from '@/features/requests';
+import { paymentsApi } from '@/features/payments';
+import { listRequestsForBeep, type SeatRequestDetail } from '@/features/requests';
 import { useTheme } from '@/hooks/use-theme';
 import { useQuery } from '@/hooks/use-query';
 import { useAnalytics } from '@/lib/analytics';
 import { pluralize } from '@/lib/format';
 
-function RequestRow({ request, seatsAvailable, onDecide, busyId }: { request: SeatRequestDetail; seatsAvailable: number; onDecide: (id: string, status: 'accepted' | 'declined') => void; busyId: string | null }) {
+function RequestRow({ request, seatsAvailable, onDecide, busyId, paid }: { request: SeatRequestDetail; seatsAvailable: number; onDecide: (id: string, status: 'accepted' | 'declined') => void; busyId: string | null; paid: boolean }) {
   const theme = useTheme();
   const router = useRouter();
   const canAccept = request.seats_requested <= seatsAvailable;
@@ -49,7 +50,7 @@ function RequestRow({ request, seatsAvailable, onDecide, busyId }: { request: Se
         <View style={styles.actions}>
           <Button title="Decline" variant="secondary" size="sm" fullWidth={false} disabled={busy} onPress={() => onDecide(request.id, 'declined')} />
           <Button
-            title={canAccept ? 'Accept' : 'Not enough seats'}
+            title={canAccept ? (paid ? 'Accept and charge' : 'Accept') : 'Not enough seats'}
             variant="accent"
             size="sm"
             style={styles.grow}
@@ -70,6 +71,8 @@ function RequestRow({ request, seatsAvailable, onDecide, busyId }: { request: Se
 export default function ManageRequestsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const analytics = useAnalytics();
+  const router = useRouter();
+  const { profile } = useAuth();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -82,8 +85,12 @@ export default function ManageRequestsScreen() {
     setBusyId(requestId);
     setActionError(null);
     try {
-      const updated = await setRequestStatus(requestId, status);
-      if (status === 'accepted') analytics.track('seat_accepted', { beep_id: updated.beep_id, seat_request_id: updated.id });
+      if (status === 'accepted') {
+        await paymentsApi.acceptRequest(requestId);
+        analytics.track('seat_accepted', { beep_id: id, seat_request_id: requestId });
+      } else {
+        await paymentsApi.declineRequest(requestId);
+      }
       await Promise.all([requests.refetch(), beep.refetch()]);
     } catch (err) {
       setActionError(describeAuthError(err));
@@ -101,10 +108,18 @@ export default function ManageRequestsScreen() {
   const accepted = list.filter((r) => r.status === 'accepted');
   const closed = list.filter((r) => r.status === 'declined' || r.status === 'cancelled');
   const available = seatsLeft(beep.data);
+  const paidRide = beep.data.price_per_seat_cents > 0;
+  const needsPayouts = paidRide && !profile?.payouts_enabled;
 
   return (
     <Screen>
       <RideSummary beep={beep.data} compact />
+      {needsPayouts ? (
+        <Card>
+          <Notice message="Set up payouts before accepting paid requests. Riders are charged when you accept, and your share is sent after the ride." tone="info" />
+          <Button title="Set up payouts" variant="accent" size="sm" onPress={() => router.push('/earnings')} style={styles.payoutButton} />
+        </Card>
+      ) : null}
       <Text variant="caption" color="textSecondary">
         {pluralize(available, 'seat')} still open · {pluralize(accepted.length, 'rider')} accepted
       </Text>
@@ -116,7 +131,7 @@ export default function ManageRequestsScreen() {
         <View style={styles.group}>
           <Text variant="heading">Pending ({pending.length})</Text>
           {pending.map((r) => (
-            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} />
+            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} paid={paidRide} />
           ))}
         </View>
       ) : null}
@@ -124,7 +139,7 @@ export default function ManageRequestsScreen() {
         <View style={styles.group}>
           <Text variant="heading">Riding with you ({accepted.length})</Text>
           {accepted.map((r) => (
-            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} />
+            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} paid={paidRide} />
           ))}
         </View>
       ) : null}
@@ -134,7 +149,7 @@ export default function ManageRequestsScreen() {
             Closed ({closed.length})
           </Text>
           {closed.map((r) => (
-            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} />
+            <RequestRow key={r.id} request={r} seatsAvailable={available} onDecide={decide} busyId={busyId} paid={paidRide} />
           ))}
         </View>
       ) : null}
@@ -151,4 +166,5 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.md },
   grow: { flex: 1 },
   group: { gap: Spacing.md },
+  payoutButton: { marginTop: Spacing.md },
 });

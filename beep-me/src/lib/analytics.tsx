@@ -11,9 +11,10 @@ export type AnalyticsEvents = {
   beep_viewed: { beep_id: string };
   seat_requested: { beep_id: string; seat_request_id: string; seats_requested: number };
   seat_accepted: { beep_id: string; seat_request_id: string };
-  booking_completed: { beep_id: string; seat_request_id: string; total_cents: number };
+  booking_completed: { beep_id: string; paid_out_cents: number; riders: number };
   paywall_viewed: { source: string };
   subscription_started: { product_id: string };
+  review_submitted: { beep_id: string; stars: number };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEvents;

@@ -43,7 +43,10 @@ export function BeepCard({ beep, mine = false }: BeepCardProps) {
               </Text>
             )}
           </View>
-          <VerifiedPill />
+          <View style={styles.pills}>
+            <VerifiedPill />
+            {beep.driver.plus_active ? <Pill label="Plus" tone="accent" icon="sparkles" /> : null}
+          </View>
           <Text variant="caption" color="textSecondary">
             {formatDepartureDay(beep.departure_at)} · {formatTime(beep.departure_at)}
           </Text>
@@ -87,6 +90,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: Spacing.md },
   body: { flex: 1, gap: 4 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  pills: { flexDirection: 'row', gap: Spacing.xs, flexWrap: 'wrap' },
   name: { flexShrink: 1 },
   rating: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   meta: { flexDirection: 'row', gap: Spacing.md, marginTop: 2 },

@@ -8,6 +8,7 @@ import { Colors, FontSize } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { AnalyticsProvider, useAnalytics } from '@/lib/analytics';
 import { initSentry, Sentry } from '@/lib/sentry';
+import { StripeProvider } from '@/lib/stripe';
 
 // Sentry starts before anything renders so startup crashes are captured too.
 initSentry();
@@ -15,7 +16,7 @@ initSentry();
 void SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { status, isOnboarded } = useAuth();
+  const { status, isOnboarded, hasAcceptedTerms } = useAuth();
   const analytics = useAnalytics();
   const pathname = usePathname();
   const scheme = useColorScheme();
@@ -32,7 +33,8 @@ function RootNavigator() {
   if (status === 'loading') return null;
 
   const signedIn = status === 'signedIn';
-  const canUseApp = signedIn && isOnboarded;
+  const needsTerms = signedIn && isOnboarded && !hasAcceptedTerms;
+  const canUseApp = signedIn && isOnboarded && hasAcceptedTerms;
 
   return (
     <Stack
@@ -52,8 +54,16 @@ function RootNavigator() {
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack.Protected>
 
+      <Stack.Protected guard={needsTerms}>
+        <Stack.Screen name="accept-terms" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      {/* Legal documents are readable at every stage, including onboarding. */}
+      <Stack.Screen name="legal/[doc]" options={{ title: 'Legal' }} />
+
       <Stack.Protected guard={canUseApp}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="earnings" options={{ title: 'Payments and earnings' }} />
         <Stack.Screen name="search" options={{ title: 'Find a ride' }} />
         <Stack.Screen name="post" options={{ title: 'Post a ride' }} />
         <Stack.Screen name="beep/[id]/index" options={{ title: 'Ride details' }} />
@@ -93,9 +103,11 @@ function RootLayout() {
       }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AnalyticsProvider>
-        <AuthProvider>
-          <RootNavigator />
-        </AuthProvider>
+        <StripeProvider>
+          <AuthProvider>
+            <RootNavigator />
+          </AuthProvider>
+        </StripeProvider>
       </AnalyticsProvider>
     </ThemeProvider>
   );

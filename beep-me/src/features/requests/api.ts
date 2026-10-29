@@ -12,7 +12,7 @@ export type SeatRequestDetail = SeatRequest & {
 };
 
 const REQUEST_DETAIL =
-  '*, beep:beeps!seat_requests_beep_id_fkey(*, driver:profiles!beeps_driver_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_given)), rider:profiles!seat_requests_rider_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_taken, edu_verified)';
+  '*, beep:beeps!seat_requests_beep_id_fkey(*, driver:profiles!beeps_driver_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_given, plus_active)), rider:profiles!seat_requests_rider_id_fkey(id, display_name, avatar_url, average_rating, rating_count, rides_taken, edu_verified)';
 
 export async function createSeatRequest(beepId: string, riderId: string, seats: number): Promise<SeatRequest> {
   const { data, error } = await supabase

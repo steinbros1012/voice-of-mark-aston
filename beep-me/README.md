@@ -155,14 +155,43 @@ PGURL=postgres://postgres:postgres@localhost:5432/postgres scripts/db-test.sh
 2. Developers → API keys: copy the **publishable key** to `.env` as
    `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY`, and the **secret key** to
    `supabase/functions/.env` as `STRIPE_SECRET_KEY`.
-3. Connect → Settings: enable **Express** accounts. Drivers onboard through an
-   Express account link; riders are charged with a destination charge and
-   `application_fee_amount` set to 15% (see `src/constants/fees.ts`).
-4. Developers → Webhooks: add an endpoint pointing at the payments Edge Function
-   (URL printed by `supabase functions deploy` in Phase 5) and copy the signing
-   secret to `STRIPE_WEBHOOK_SECRET`.
+3. Connect → Get started: complete the platform profile and enable **Express**
+   accounts (United States). Drivers onboard through an Express account link
+   from the Payments and earnings screen.
+4. Developers → Webhooks: add an endpoint at
+   `https://<project-ref>.supabase.co/functions/v1/stripe-webhook` for the
+   events `setup_intent.succeeded`, `payment_method.detached`,
+   `account.updated`, `payment_intent.payment_failed`, `charge.refunded`, and
+   copy the signing secret to `STRIPE_WEBHOOK_SECRET`.
 5. Settings → Payment methods → Apple Pay: register the merchant id
    `merchant.app.beepme.mobile` when you are ready for Apple Pay.
+
+How money moves (separate charges and transfers):
+
+* Riders save a card once through Stripe's PaymentSheet (a SetupIntent on the
+  rider's Stripe Customer). Nothing is charged at request time.
+* When the driver accepts, the `accept-request` function charges the saved
+  card off-session for seats × price plus a $1 booking fee (waived for Plus
+  riders), records a `payments` row, then marks the request accepted. A
+  declined card leaves the request pending with the reason.
+* Cancelling before departure (`cancel-request`, `cancel-beep`) refunds in full.
+* When the driver marks the ride complete (`complete-beep`), each payment is
+  transferred to the driver's Express account for the seat subtotal less 15%,
+  tied to the original charge so it clears when the charge settles. Beep Me
+  keeps the 15% and the booking fee; Stripe's processing fees come out of
+  that share.
+* Fee math lives in `src/constants/fees.ts` (client preview) and
+  `supabase/functions/_shared/fees.ts` (authoritative).
+
+Deploy and configure the functions:
+
+```bash
+supabase secrets set --env-file supabase/functions/.env
+supabase functions deploy payments connect connect-return accept-request cancel-request cancel-beep complete-beep stripe-webhook revenuecat-webhook
+```
+
+`supabase/config.toml` turns JWT verification off for the two webhooks and the
+Connect return page; every other function requires the student's session.
 
 ### 3. RevenueCat (Beep Me Plus subscription)
 
@@ -173,8 +202,13 @@ PGURL=postgres://postgres:postgres@localhost:5432/postgres scripts/db-test.sh
 3. Create the products in App Store Connect and Google Play Console, then in
    RevenueCat create an entitlement named `plus`, an offering named `default`,
    and attach monthly and annual packages.
-4. Integrations → Webhooks (optional, Phase 5): point at the RevenueCat Edge
-   Function and set the authorization header value as `REVENUECAT_WEBHOOK_SECRET`.
+4. Integrations → Webhooks: point at
+   `https://<project-ref>.supabase.co/functions/v1/revenuecat-webhook` and set
+   an Authorization header value; store the same value as
+   `REVENUECAT_WEBHOOK_SECRET`. The webhook keeps `profiles.plus_active` in
+   step so premium placement and the booking-fee waiver work server-side.
+5. The app logs students into RevenueCat with their Supabase user id, so
+   entitlements follow the account across devices.
 
 ### 4. PostHog (product analytics)
 
@@ -223,6 +257,17 @@ eas build --profile development --platform ios
 
 The TestFlight submission checklist lands in Phase 6.
 
+## Legal and consent
+
+`src/features/legal/content.ts` holds the Terms of Service, Privacy Policy and
+Community Guidelines, written for a student cost-sharing marketplace (platform
+only, not a carrier; assumption of risk; limitation of liability;
+arbitration). They are drafts for attorney review, not legal advice. Students
+accept them during onboarding; the version and time are stored on the profile
+(`accepted_terms_version`, `accepted_terms_at`). Bump `TERMS_VERSION` when the
+documents change and every signed-in student is asked to accept again before
+using the app.
+
 ## Design system
 
 Light mode follows the Beep Me reference: warm off-white background
@@ -255,7 +300,10 @@ Explore and Trips.
    by triggers, cascade cancellation, per-booking chat with realtime inserts
    and inbox previews, Trips and Inbox tabs, report and block, public
    profiles with reviews. PostHog `seat_requested` and `seat_accepted`.
-5. Payments and trust: Stripe Connect with the 15% fee, completion, ratings,
-   reviews, report and block, RevenueCat paywall.
+5. **Payments and trust** (done): Stripe Connect charge on accept, refunds
+   on cancel, payouts on completion with the 15% fee, earnings screen,
+   ratings and reviews both ways with profile aggregates, ride counters,
+   RevenueCat paywall with Plus perks, Terms / Privacy / Community
+   Guidelines with recorded consent and a re-acceptance gate.
 6. Polish: PostHog verified, Resend emails live, loading/empty/error states,
    icon and splash, TestFlight checklist.

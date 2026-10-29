@@ -11,13 +11,19 @@ import {
 } from 'react';
 
 import { useAnalytics } from '@/lib/analytics';
+import { configurePurchases } from '@/lib/purchases';
 import { Sentry } from '@/lib/sentry';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { Profile, TablesUpdate } from '@/types/database';
 
+import { TERMS_VERSION } from '@/features/legal/content';
+
 export type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
-type ProfileUpdate = Pick<TablesUpdate<'profiles'>, 'display_name' | 'bio' | 'avatar_url' | 'onboarding_completed_at'>;
+type ProfileUpdate = Pick<
+  TablesUpdate<'profiles'>,
+  'display_name' | 'bio' | 'avatar_url' | 'onboarding_completed_at' | 'accepted_terms_version' | 'accepted_terms_at'
+>;
 
 type AuthContextValue = {
   status: AuthStatus;
@@ -26,6 +32,8 @@ type AuthContextValue = {
   profile: Profile | null;
   /** True once the user has finished the onboarding screen. */
   isOnboarded: boolean;
+  /** True when the profile has accepted the current Terms version. */
+  hasAcceptedTerms: boolean;
   isConfigured: boolean;
   /**
    * Email a 6-digit code. With `createAccount` a new user is created on first
@@ -147,6 +155,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   // Tie crash reports and analytics to the signed-in student (id only, no PII).
   useEffect(() => {
+    void configurePurchases(userId);
     if (userId) {
       Sentry.setUser({ id: userId });
       analytics.identify(userId, { university_id: profile?.university_id ?? null });
@@ -210,6 +219,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       user: session?.user ?? null,
       profile,
       isOnboarded: Boolean(profile?.onboarding_completed_at),
+      hasAcceptedTerms: profile?.accepted_terms_version === TERMS_VERSION,
       isConfigured: isSupabaseConfigured,
       requestCode,
       verifyCode,

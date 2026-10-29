@@ -3,6 +3,8 @@
  * drift; the same split is enforced server-side in Phase 5.
  */
 export const PLATFORM_FEE_PERCENT = 15;
+/** Rider-side booking fee per booking, waived for Beep Me Plus riders. */
+export const RIDER_BOOKING_FEE_CENTS = 100;
 
 export type FeeBreakdown = {
   /** What the rider is charged. */
@@ -28,4 +30,24 @@ export function splitFare(totalCents: number): FeeBreakdown {
 
 export function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+}
+
+export type BookingQuote = {
+  seatSubtotalCents: number;
+  bookingFeeCents: number;
+  /** What the rider is charged. */
+  amountCents: number;
+  /** Beep Me's share: 15% of the seats plus the booking fee. */
+  platformFeeCents: number;
+  /** What the driver receives on completion. */
+  driverPayoutCents: number;
+};
+
+/** Same math as supabase/functions/_shared/fees.ts; the server is authoritative. */
+export function quoteBooking(seats: number, pricePerSeatCents: number, riderIsPlus: boolean): BookingQuote {
+  const seatSubtotalCents = seats * pricePerSeatCents;
+  const bookingFeeCents = seatSubtotalCents > 0 && !riderIsPlus ? RIDER_BOOKING_FEE_CENTS : 0;
+  const amountCents = seatSubtotalCents + bookingFeeCents;
+  const driverPayoutCents = splitFare(seatSubtotalCents).driverPayoutCents;
+  return { seatSubtotalCents, bookingFeeCents, amountCents, platformFeeCents: amountCents - driverPayoutCents, driverPayoutCents };
 }

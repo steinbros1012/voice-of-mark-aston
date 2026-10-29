@@ -7,7 +7,8 @@ import { Avatar, BeepStatusPill, BottomBar, Button, Card, ErrorState, FormError,
 import { formatCents } from '@/constants/fees';
 import { Radius, Spacing } from '@/constants/theme';
 import { describeAuthError, useAuth } from '@/features/auth';
-import { cancelBeep, completeBeep, getBeep, RouteTimeline, seatsLeft, shareBeep } from '@/features/beeps';
+import { getBeep, RouteTimeline, seatsLeft, shareBeep } from '@/features/beeps';
+import { paymentsApi } from '@/features/payments';
 import { countPendingByBeep, getMyRequestForBeep } from '@/features/requests';
 import { useTheme } from '@/hooks/use-theme';
 import { useQuery } from '@/hooks/use-query';
@@ -74,7 +75,7 @@ export default function RideDetailScreen() {
     }
   }
 
-  async function run(action: () => Promise<void>) {
+  async function run(action: () => Promise<unknown>) {
     setBusy(true);
     setActionError(null);
     try {
@@ -107,7 +108,18 @@ export default function RideDetailScreen() {
               onPress={() => router.push({ pathname: '/beep/[id]/requests', params: { id: beep.id } })}
             />
             {departed ? (
-              <Button title="Mark complete" variant="accent" fullWidth={false} loading={busy} onPress={() => run(() => completeBeep(beep.id))} />
+              <Button
+                title="Mark complete"
+                variant="accent"
+                fullWidth={false}
+                loading={busy}
+                onPress={() =>
+                  run(async () => {
+                    const result = await paymentsApi.completeBeep(beep.id);
+                    analytics.track('booking_completed', { beep_id: beep.id, paid_out_cents: result.paidOutCents, riders: beep.seats_taken });
+                  })
+                }
+              />
             ) : (
               <Button title="Edit" variant="secondary" fullWidth={false} onPress={() => router.push({ pathname: '/post', params: { edit: beep.id } })} />
             )}
@@ -195,12 +207,12 @@ export default function RideDetailScreen() {
 
         <Card flush style={styles.details}>
           <ListRow icon="people-outline" title={left === 0 ? `Full · ${beep.seats_total} seats` : `${pluralize(left, 'seat')} left of ${beep.seats_total}`} />
-          <ListRow icon="cash-outline" title={`${formatCents(beep.price_per_seat_cents)} per seat`} subtitle="Beep Me keeps 15%; the driver receives the rest." />
+          <ListRow icon="cash-outline" title={`${formatCents(beep.price_per_seat_cents)} per seat`} subtitle="Charged when the driver accepts. Beep Me keeps 15% plus a $1 booking fee (waived with Plus); the driver receives the rest after the ride." />
           {beep.note ? <ListRow icon="chatbox-ellipses-outline" title="From the driver" subtitle={beep.note} /> : null}
           <ListRow
             icon="shield-checkmark-outline"
             title="Cancellation policy"
-            subtitle="Riders can cancel any time before departure. Drivers who cancel release every seat."
+            subtitle="Riders can cancel any time before departure for a full refund. Drivers who cancel refund every rider."
             last
           />
         </Card>
@@ -217,7 +229,7 @@ export default function RideDetailScreen() {
             variant="danger"
             loading={busy}
             onPress={() =>
-              confirm('Cancel this ride?', 'Every pending and accepted request on it will be cancelled.', 'Cancel ride', () => run(() => cancelBeep(beep.id)))
+              confirm('Cancel this ride?', 'Every pending and accepted request on it will be cancelled and paid riders refunded in full.', 'Cancel ride', () => run(() => paymentsApi.cancelBeep(beep.id)))
             }
           />
         ) : null}

@@ -54,6 +54,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [
+      '@stripe/stripe-react-native',
+      {
+        merchantIdentifier: process.env.EXPO_PUBLIC_STRIPE_MERCHANT_ID ?? 'merchant.app.beepme.mobile',
+        enableGooglePay: true,
+      },
+    ],
+    [
       '@sentry/react-native/expo',
       {
         // Source-map upload at build time. Auth comes from SENTRY_AUTH_TOKEN.

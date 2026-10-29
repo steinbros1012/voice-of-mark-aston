@@ -1,0 +1,14 @@
+# Supabase CLI configuration. `supabase link` fills in project_id.
+project_id = "beep-me-demo"
+
+[functions.stripe-webhook]
+# Stripe signs its requests; there is no user JWT to verify.
+verify_jwt = false
+
+[functions.revenuecat-webhook]
+# RevenueCat authenticates with the shared Authorization header value.
+verify_jwt = false
+
+[functions.connect-return]
+# Browser redirect target after Stripe Connect onboarding; public page.
+verify_jwt = false

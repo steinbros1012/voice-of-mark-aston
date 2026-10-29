@@ -6,6 +6,7 @@ import { Avatar, Button, FormError, Text, TextField } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { UNIVERSITIES } from '@/constants/universities';
 import { describeAuthError, pickAndUploadAvatar, useAuth, validateDisplayName } from '@/features/auth';
+import { ConsentCheckbox, TERMS_VERSION } from '@/features/legal';
 import { useTheme } from '@/hooks/use-theme';
 
 const BIO_MAX = 150;
@@ -28,6 +29,8 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState<string | null>(null);
   const campus = UNIVERSITIES.find((u) => u.id === profile?.university_id);
 
   async function choosePhoto() {
@@ -47,7 +50,9 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
   async function save() {
     const nameProblem = validateDisplayName(displayName);
     setNameError(nameProblem);
-    if (nameProblem) return;
+    const consentProblem = completeOnboarding && !consent ? 'Please agree to the terms to continue.' : null;
+    setConsentError(consentProblem);
+    if (nameProblem || consentProblem) return;
     setFormError(null);
     setSaving(true);
     try {
@@ -55,7 +60,9 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
         display_name: displayName.trim(),
         bio: bio.trim() || null,
         avatar_url: avatarUrl,
-        ...(completeOnboarding ? { onboarding_completed_at: new Date().toISOString() } : {}),
+        ...(completeOnboarding
+          ? { onboarding_completed_at: new Date().toISOString(), accepted_terms_version: TERMS_VERSION, accepted_terms_at: new Date().toISOString() }
+          : {}),
       });
       onSaved();
     } catch (error) {
@@ -118,6 +125,7 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
         counter={`${bio.length}/${BIO_MAX}`}
       />
 
+      {completeOnboarding ? <ConsentCheckbox checked={consent} onChange={setConsent} error={consentError} /> : null}
       <FormError message={formError} />
       <Button title={submitLabel} variant="accent" onPress={save} loading={saving} disabled={uploading} />
     </View>

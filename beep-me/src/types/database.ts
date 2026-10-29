@@ -17,6 +17,7 @@ export type ReportReason =
   | 'other';
 export type ReportStatus = 'open' | 'reviewed' | 'actioned' | 'dismissed';
 export type TripType = 'local' | 'long';
+export type PaymentStatus = 'pending' | 'succeeded' | 'failed' | 'refunded' | 'paid_out';
 
 export type Database = {
   public: {
@@ -56,6 +57,14 @@ export type Database = {
           rides_given: number;
           rides_taken: number;
           onboarding_completed_at: string | null;
+          stripe_customer_id: string | null;
+          has_payment_method: boolean;
+          stripe_account_id: string | null;
+          payouts_enabled: boolean;
+          plus_active: boolean;
+          plus_expires_at: string | null;
+          accepted_terms_version: string | null;
+          accepted_terms_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -71,6 +80,14 @@ export type Database = {
           rides_given?: number;
           rides_taken?: number;
           onboarding_completed_at?: string | null;
+          stripe_customer_id?: string | null;
+          has_payment_method?: boolean;
+          stripe_account_id?: string | null;
+          payouts_enabled?: boolean;
+          plus_active?: boolean;
+          plus_expires_at?: string | null;
+          accepted_terms_version?: string | null;
+          accepted_terms_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -275,6 +292,72 @@ export type Database = {
           },
         ];
       };
+      payments: {
+        Row: {
+          id: string;
+          seat_request_id: string;
+          rider_id: string;
+          driver_id: string;
+          seat_subtotal_cents: number;
+          booking_fee_cents: number;
+          amount_cents: number;
+          platform_fee_cents: number;
+          driver_payout_cents: number;
+          currency: string;
+          stripe_payment_intent_id: string | null;
+          stripe_charge_id: string | null;
+          stripe_transfer_id: string | null;
+          stripe_refund_id: string | null;
+          status: PaymentStatus;
+          failure_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          seat_request_id: string;
+          rider_id: string;
+          driver_id: string;
+          seat_subtotal_cents: number;
+          booking_fee_cents?: number;
+          amount_cents: number;
+          platform_fee_cents: number;
+          driver_payout_cents: number;
+          currency?: string;
+          stripe_payment_intent_id?: string | null;
+          stripe_charge_id?: string | null;
+          stripe_transfer_id?: string | null;
+          stripe_refund_id?: string | null;
+          status?: PaymentStatus;
+          failure_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['payments']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'payments_seat_request_id_fkey';
+            columns: ['seat_request_id'];
+            isOneToOne: true;
+            referencedRelation: 'seat_requests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payments_rider_id_fkey';
+            columns: ['rider_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payments_driver_id_fkey';
+            columns: ['driver_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       reports: {
         Row: {
           id: string;
@@ -334,6 +417,7 @@ export type Database = {
       seat_request_status: SeatRequestStatus;
       report_reason: ReportReason;
       report_status: ReportStatus;
+      payment_status: PaymentStatus;
     };
     CompositeTypes: Record<never, never>;
   };
@@ -350,3 +434,4 @@ export type SeatRequest = Tables<'seat_requests'>;
 export type Message = Tables<'messages'>;
 export type Review = Tables<'reviews'>;
 export type Report = Tables<'reports'>;
+export type Payment = Tables<'payments'>;

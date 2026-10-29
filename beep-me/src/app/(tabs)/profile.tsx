@@ -80,12 +80,26 @@ export default function ProfileScreen() {
       <Card flush style={styles.rows}>
         <ListRow icon="star-outline" title="Ratings and reviews" subtitle="What riders and drivers say about you" onPress={() => router.push({ pathname: '/user/[id]', params: { id: profile.id } })} />
         <ListRow icon="car-outline" title="Your rides" subtitle="Rides you're driving and their requests" onPress={() => router.push('/trips')} />
-        <ListRow icon="wallet-outline" title="Payments and earnings" subtitle="Coming with in-app payments (next release)" />
-        <ListRow icon="sparkles-outline" title="Beep Me Plus" subtitle="Premium placement for drivers, no booking fees for riders" onPress={() => router.push('/paywall')} last />
+        <ListRow
+          icon="wallet-outline"
+          title="Payments and earnings"
+          subtitle={profile.payouts_enabled ? 'Payouts set up · card on file' : 'Add a card, set up payouts, see your history'}
+          onPress={() => router.push('/earnings')}
+        />
+        <ListRow
+          icon="sparkles-outline"
+          title="Beep Me Plus"
+          subtitle={profile.plus_active ? 'Active · premium placement and no booking fees' : 'Premium placement for drivers, no booking fees for riders'}
+          onPress={() => router.push('/paywall')}
+          last
+        />
       </Card>
 
       <Card flush style={styles.rows}>
         <ListRow icon="help-circle-outline" title="Help and safety" onPress={() => router.push('/help')} />
+        <ListRow icon="document-text-outline" title="Terms of Service" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'terms' } })} />
+        <ListRow icon="lock-closed-outline" title="Privacy Policy" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'privacy' } })} />
+        <ListRow icon="people-outline" title="Community Guidelines" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'guidelines' } })} />
         <ListRow icon="mail-outline" title={user?.email ?? ''} subtitle="Verified student email" last />
       </Card>
 
