@@ -123,11 +123,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setStatus(next ? 'signedIn' : 'signedOut');
     }
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => applySession(data.session))
-      .catch(() => applySession(null));
-
+    // onAuthStateChange emits INITIAL_SESSION with the persisted session on
+    // subscribe, so one listener covers bootstrap and later changes.
     const { data: subscription } = supabase.auth.onAuthStateChange((event, next) => {
       if (event === 'TOKEN_REFRESHED' && next?.user.id === latestUserId.current) {
         setSession(next);

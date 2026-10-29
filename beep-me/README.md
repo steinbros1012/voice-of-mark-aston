@@ -196,6 +196,14 @@ PGURL=postgres://postgres:postgres@localhost:5432/postgres scripts/db-test.sh
    and push them with `supabase secrets set --env-file supabase/functions/.env`.
    The key is used only by the email Edge Function and never ships in the app.
 
+### Share links and deep links
+
+`shareBeep` opens the native share sheet with a link to the Beep. When
+`EXPO_PUBLIC_APP_URL` is set the link is `https://<host>/beep/<id>` (needs the
+domain's apple-app-site-association and assetlinks.json for universal links;
+Phase 6). Until then it falls back to `beepme://beep/<id>`, which opens the
+app directly on devices that have it installed.
+
 ### 7. EAS (builds and TestFlight)
 
 ```bash
@@ -215,7 +223,11 @@ The TestFlight submission checklist lands in Phase 6.
    sign up / log in, .edu code verification, campus derived from the email
    domain, onboarding and profile editing with avatar upload, PostHog
    `sign_up` and `verification_completed` events.
-3. Beeps: post, campus feed, search and filters, detail, share.
+3. **Beeps** (done): post a Beep (day/time chips, seats, price with the fee
+   preview), campus feed with pull-to-refresh, search by destination, day,
+   time of day and price, Beep detail with driver card, cancel, and native
+   share sheet with a link back into the app. PostHog `beep_posted` and
+   `beep_viewed` events.
 4. Requests and messaging: seat requests, accept/decline, seat counts, chat.
 5. Payments and trust: Stripe Connect with the 15% fee, completion, ratings,
    reviews, report and block, RevenueCat paywall.
