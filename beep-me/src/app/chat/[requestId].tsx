@@ -8,6 +8,7 @@ import { Avatar, ErrorState, IconButton, LoadingState, Notice, RequestStatusPill
 import { FontSize, MaxContentWidth, Radius, Spacing, TouchTarget } from '@/constants/theme';
 import { describeAuthError, useAuth } from '@/features/auth';
 import { listMessages, sendMessage, subscribeToMessages } from '@/features/messages';
+import { callFunction } from '@/features/payments';
 import { getSeatRequest } from '@/features/requests';
 import { useTheme } from '@/hooks/use-theme';
 import { useQuery } from '@/hooks/use-query';
@@ -72,6 +73,7 @@ export default function ChatScreen() {
       const message = await sendMessage(requestId, user.id, body);
       setMessages((current) => (current.some((m) => m.id === message.id) ? current : [...current, message]));
       setDraft('');
+      void callFunction('push', { kind: 'message', requestId, preview: body }).catch(() => undefined);
     } catch (err) {
       setSendError(describeAuthError(err));
     } finally {

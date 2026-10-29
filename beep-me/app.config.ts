@@ -41,6 +41,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     'expo-localization',
     [
+      'expo-notifications',
+      {
+        icon: './assets/images/notification-icon.png',
+        color: '#C6EF68',
+        defaultChannel: 'default',
+      },
+    ],
+    [
       'expo-image-picker',
       {
         photosPermission: 'Beep Me uses your photos so you can add a profile picture.',

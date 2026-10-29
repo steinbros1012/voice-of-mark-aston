@@ -1,11 +1,14 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider, usePathname } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter, usePathname, type ErrorBoundaryProps } from 'expo-router';
+import * as Linking from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { Colors, FontSize } from '@/constants/theme';
+import { Button, EmptyState, Screen } from '@/components/ui';
 import { AuthProvider, useAuth } from '@/features/auth';
+import { subscribeToNotificationTaps } from '@/features/notifications';
 import { AnalyticsProvider, useAnalytics } from '@/lib/analytics';
 import { initSentry, Sentry } from '@/lib/sentry';
 import { StripeProvider } from '@/lib/stripe';
@@ -15,10 +18,30 @@ initSentry();
 // Keep the splash up until we know whether a session exists.
 void SplashScreen.preventAutoHideAsync();
 
+/** Last-resort screen for a render error anywhere in the app. Sentry already has the report. */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  Sentry.captureException(error);
+  return (
+    <Screen scroll={false}>
+      <EmptyState title="Something went wrong" description="The app hit an error it could not recover from. Your data is safe." icon="warning-outline" />
+      <Button title="Try again" onPress={retry} />
+    </Screen>
+  );
+}
+
 function RootNavigator() {
   const { status, isOnboarded, hasAcceptedTerms } = useAuth();
   const analytics = useAnalytics();
   const pathname = usePathname();
+  const router = useRouter();
+
+  // A tapped push notification carries a beepme:// link; route to it.
+  useEffect(() => {
+    return subscribeToNotificationTaps((url) => {
+      const { path } = Linking.parse(url);
+      if (path) router.push(`/${path}` as never);
+    });
+  }, [router]);
   const scheme = useColorScheme();
   const palette = scheme === 'dark' ? Colors.dark : Colors.light;
 

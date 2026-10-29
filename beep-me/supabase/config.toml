@@ -33,3 +33,7 @@ anonymous_users = 30
 # Codes expire after 10 minutes; a wrong code never reveals whether the email exists.
 otp_expiry = 600
 otp_length = 6
+
+# ride-reminders is invoked by the scheduler with the secret key, not by users.
+# [functions.ride-reminders] keeps verify_jwt on; the cron job sends
+# "Authorization: Bearer <secret key>" (see README: Cron).

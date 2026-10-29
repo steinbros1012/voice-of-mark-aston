@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { SUBSCRIPTION_MANAGEMENT_URL } from '@/app/paywall';
@@ -9,6 +9,7 @@ import { Avatar, Button, Card, FormError, ListRow, Screen, Text, VerifiedPill } 
 import { Spacing } from '@/constants/theme';
 import { UNIVERSITIES } from '@/constants/universities';
 import { describeAuthError, useAuth } from '@/features/auth';
+import { getPushStatus, registerForPush, unregisterPush, type PushStatus } from '@/features/notifications';
 import { useTheme } from '@/hooks/use-theme';
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -28,7 +29,15 @@ export default function ProfileScreen() {
   const { profile, user, signOut } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [push, setPush] = useState<PushStatus | null>(null);
+  const loadPush = useCallback(() => getPushStatus().then(setPush), []);
   const university = UNIVERSITIES.find((u) => u.id === profile?.university_id);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadPush();
+    }, [loadPush]),
+  );
 
   async function handleSignOut() {
     setSigningOut(true);
@@ -101,6 +110,28 @@ export default function ProfileScreen() {
       </Card>
 
       <Card flush style={styles.rows}>
+        <ListRow
+          icon={push === 'granted' ? 'notifications' : 'notifications-outline'}
+          title="Ride notifications"
+          subtitle={
+            push === 'granted'
+              ? 'On for this device: requests, acceptances, messages and reminders'
+              : push === 'denied'
+                ? 'Off. Turn them on in your phone settings.'
+                : push === 'unsupported'
+                  ? 'Available in the iOS and Android app'
+                  : 'Get told about requests, acceptances and messages'
+          }
+          onPress={async () => {
+            if (push === null) await loadPush();
+            if (push === 'granted') {
+              await unregisterPush();
+              setPush('undetermined');
+            } else if (user) {
+              setPush(await registerForPush(user.id));
+            }
+          }}
+        />
         <ListRow icon="help-circle-outline" title="Help and safety" onPress={() => router.push('/help')} />
         <ListRow icon="document-text-outline" title="Terms of Service" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'terms' } })} />
         <ListRow icon="lock-closed-outline" title="Privacy Policy" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'privacy' } })} />

@@ -3,6 +3,7 @@
 import { withSupabase } from 'npm:@supabase/server@1';
 
 import { guarded, HttpError, json } from '../_shared/http.ts';
+import { pushToUsers } from '../_shared/push.ts';
 import { stripe } from '../_shared/stripe.ts';
 
 type Body = { beepId?: string };
@@ -16,7 +17,7 @@ export default {
       if (!beepId) throw new HttpError(400, 'beepId is required');
       const admin = ctx.supabaseAdmin;
 
-      const { data: beep } = await admin.from('beeps').select('id, driver_id, status').eq('id', beepId).single();
+      const { data: beep } = await admin.from('beeps').select('id, driver_id, status, destination').eq('id', beepId).single();
       if (!beep) throw new HttpError(404, 'Ride not found');
       if (beep.driver_id !== userId) throw new HttpError(403, 'Only the driver can cancel this ride');
       if (beep.status === 'completed' || beep.status === 'cancelled') throw new HttpError(409, 'This ride is already closed');
@@ -39,8 +40,10 @@ export default {
         refunded += 1;
       }
 
+      const { data: affected } = await admin.from('seat_requests').select('rider_id').eq('beep_id', beep.id).in('status', ['pending', 'accepted']);
       const { error } = await admin.from('beeps').update({ status: 'cancelled' }).eq('id', beep.id);
       if (error) throw new HttpError(409, error.message);
+      await pushToUsers(admin, (affected ?? []).map((r) => r.rider_id), { title: 'Ride cancelled', body: `The ride to ${beep.destination} was cancelled. Any payment is refunded in full.`, data: { url: 'beepme://trips' } });
       return json({ ok: true, refunded });
     }),
   ),

@@ -7,7 +7,7 @@ import { formatCents, quoteBooking } from '@/constants/fees';
 import { Spacing } from '@/constants/theme';
 import { describeAuthError, useAuth } from '@/features/auth';
 import { getBeep, RideSummary, seatsLeft } from '@/features/beeps';
-import { PaymentMethodCard } from '@/features/payments';
+import { callFunction, PaymentMethodCard } from '@/features/payments';
 import { createSeatRequest } from '@/features/requests';
 import { useTheme } from '@/hooks/use-theme';
 import { useQuery } from '@/hooks/use-query';
@@ -41,6 +41,7 @@ export default function RequestSeatScreen() {
     try {
       const request = await createSeatRequest(beep.id, user.id, seats);
       analytics.track('seat_requested', { beep_id: beep.id, seat_request_id: request.id, seats_requested: seats });
+      void callFunction('push', { kind: 'request', requestId: request.id }).catch(() => undefined);
       router.replace({ pathname: '/booking/[id]', params: { id: request.id, created: '1' } });
     } catch (err) {
       setError(describeAuthError(err));

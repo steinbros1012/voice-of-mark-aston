@@ -218,7 +218,9 @@ Connect return page; every other function requires the student's session.
    `https://us.i.posthog.com` or `https://eu.i.posthog.com` to match.
 3. Events tracked: `sign_up`, `verification_completed`, `beep_posted`,
    `beep_viewed`, `seat_requested`, `seat_accepted`, `booking_completed`,
-   `paywall_viewed`, `subscription_started`.
+   `paywall_viewed`, `subscription_started`, plus `review_submitted`. Every
+   event carries ids only, never names or emails. Screen views are sent
+   manually from the root layout (`analytics.screen`).
 
 ### 5. Sentry (crashes and errors)
 
@@ -234,9 +236,32 @@ Connect return page; every other function requires the student's session.
 
 1. Create an account at <https://resend.com>, add and verify your sending
    domain, and create an API key.
-2. Put `RESEND_API_KEY` and `RESEND_FROM_EMAIL` in `supabase/functions/.env`
-   and push them with `supabase secrets set --env-file supabase/functions/.env`.
-   The key is used only by the email Edge Function and never ships in the app.
+2. Put `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and `SUPPORT_EMAIL` in
+   `supabase/functions/.env` and push them with
+   `supabase secrets set --env-file supabase/functions/.env`. The key is used
+   only inside Edge Functions and never ships in the app.
+3. Emails sent: welcome (once, after onboarding, via the `welcome` function),
+   booking accepted (from `accept-request`), ride reminder about 24 hours
+   before departure (from `ride-reminders`), and a safety-report alert to
+   `SUPPORT_EMAIL` (from `report`). Templates live in
+   `supabase/functions/_shared/email.ts` and escape every user-provided value.
+4. Schedule reminders: Dashboard → Integrations → Cron → new job, every 15
+   minutes, type HTTP request, URL
+   `https://<project-ref>.supabase.co/functions/v1/ride-reminders`, header
+   `Authorization: Bearer <secret key>` (Project Settings → API keys → secret).
+   Each ride is reminded once (`beeps.reminder_sent_at`).
+
+### 6b. Push notifications (Expo)
+
+* The app asks for permission right after onboarding and from Profile →
+  Ride notifications, and stores the Expo push token in `push_tokens`
+  (owner-only RLS). Logging out removes the token.
+* Sent by the functions: new seat request (to the driver), accepted /
+  declined (to the rider), rider cancelled (to the driver), ride cancelled
+  (to riders), new message (to the other participant), ride reminder.
+* iOS needs an APNs key uploaded to EAS (`eas credentials`), Android needs
+  FCM (`eas credentials` → Google Service Account). Expo's push service
+  handles delivery; nothing else to configure.
 
 ### Share links and deep links
 
@@ -255,7 +280,42 @@ eas init                 # writes the project id; put it in .env as EAS_PROJECT_
 eas build --profile development --platform ios
 ```
 
-The TestFlight submission checklist lands in Phase 6.
+### TestFlight submission checklist
+
+1. Accounts: Apple Developer Program membership, App Store Connect app
+   created with bundle id `app.beepme.mobile`, Google Play Console app with
+   package `app.beepme.mobile`.
+2. Fill `eas.json` → `submit.production.ios` with your App Store Connect
+   app id and Apple team id; add `google-play-service-account.json` (ignored
+   by git) for Android.
+3. Credentials: `eas credentials` to let EAS manage the iOS distribution
+   certificate, provisioning profile and APNs key, and the Android keystore.
+4. Capabilities: Sign in with Apple is not used; Push Notifications and
+   Associated Domains (universal links, once `EXPO_PUBLIC_APP_URL` has a
+   domain) must be on for the bundle id; Apple Pay only if you enable it in
+   Stripe.
+5. Environment: set every `EXPO_PUBLIC_*` value, `EAS_PROJECT_ID`,
+   `SENTRY_*` as EAS environment variables (`eas env:create --scope project`),
+   production keys for Supabase, Stripe (live), RevenueCat and PostHog.
+6. Backend: migrations pushed (`supabase db push`), all functions deployed,
+   secrets set, Stripe and RevenueCat webhooks registered, Cron job for
+   reminders created, Auth email templates and rate limits configured.
+7. App Store Connect: privacy nutrition labels (contact info, user content,
+   purchases, identifiers, usage data, diagnostics), the privacy policy URL
+   (`/functions/v1/legal/privacy` or your hosted `web/legal/privacy.html`),
+   support URL, age rating (17+ is not required; 12+ with "infrequent mild"
+   nothing applies), in-app purchase products for Beep Me Plus matched to
+   RevenueCat, review notes with a test .edu account and the OTP code flow.
+8. Build and submit:
+   ```bash
+   npx eas-cli@latest build --profile production --platform ios
+   npx eas-cli@latest submit --profile production --platform ios
+   ```
+   Then in App Store Connect → TestFlight add internal testers, complete the
+   export-compliance question (the app uses only standard HTTPS encryption).
+9. Smoke test on TestFlight: sign up with a real .edu address, post a ride,
+   request a seat from a second account, accept with a Stripe test card,
+   chat, complete, rate, delete an account.
 
 ## Security notes
 
@@ -355,5 +415,7 @@ Explore and Trips.
    ratings and reviews both ways with profile aggregates, ride counters,
    RevenueCat paywall with Plus perks, Terms / Privacy / Community
    Guidelines with recorded consent and a re-acceptance gate.
-6. Polish: PostHog verified, Resend emails live, loading/empty/error states,
-   icon and splash, TestFlight checklist.
+6. **Polish** (done): all PostHog events verified end to end in the browser
+   harness, Resend emails and push notifications through Edge Functions,
+   ride-reminder cron, global error boundary, app icon, adaptive icon,
+   splash and notification icons, EAS build profiles, TestFlight checklist.

@@ -100,6 +100,7 @@ export type Database = {
           plus_expires_at: string | null;
           accepted_terms_version: string | null;
           accepted_terms_at: string | null;
+          welcome_sent_at: string | null;
           updated_at: string;
         };
         Insert: {
@@ -111,6 +112,7 @@ export type Database = {
           plus_expires_at?: string | null;
           accepted_terms_version?: string | null;
           accepted_terms_at?: string | null;
+          welcome_sent_at?: string | null;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['profile_private']['Insert']>;
@@ -119,6 +121,20 @@ export type Database = {
             foreignKeyName: 'profile_private_id_fkey';
             columns: ['id'];
             isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      push_tokens: {
+        Row: { token: string; user_id: string; platform: 'ios' | 'android'; updated_at: string };
+        Insert: { token: string; user_id: string; platform: 'ios' | 'android'; updated_at?: string };
+        Update: Partial<Database['public']['Tables']['push_tokens']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'push_tokens_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
@@ -159,6 +175,7 @@ export type Database = {
           note: string | null;
           status: BeepStatus;
           trip_type: TripType;
+          reminder_sent_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -175,6 +192,7 @@ export type Database = {
           note?: string | null;
           status?: BeepStatus;
           trip_type?: TripType;
+          reminder_sent_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

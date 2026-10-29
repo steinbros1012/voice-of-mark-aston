@@ -1,3 +1,4 @@
+import { callFunction } from '@/features/payments';
 import { supabase } from '@/lib/supabase';
 import type { ReportReason } from '@/types/database';
 
@@ -10,15 +11,14 @@ export const REPORT_REASONS: { value: ReportReason; label: string }[] = [
   { value: 'other', label: 'Something else' },
 ];
 
+/** Files the report through the server so a person is emailed about it. */
 export async function submitReport(input: { reporterId: string; userId?: string | null; beepId?: string | null; reason: ReportReason; details: string }) {
-  const { error } = await supabase.from('reports').insert({
-    reporter_id: input.reporterId,
-    reported_user_id: input.userId ?? null,
-    reported_beep_id: input.beepId ?? null,
+  await callFunction<{ ok: true; id: string }>('report', {
+    userId: input.userId ?? null,
+    beepId: input.beepId ?? null,
     reason: input.reason,
-    details: input.details.trim() || null,
+    details: input.details.trim(),
   });
-  if (error) throw error;
 }
 
 export async function blockUser(blockerId: string, blockedId: string): Promise<void> {

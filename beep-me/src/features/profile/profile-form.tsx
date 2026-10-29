@@ -7,6 +7,8 @@ import { Radius, Spacing } from '@/constants/theme';
 import { UNIVERSITIES } from '@/constants/universities';
 import { describeAuthError, pickAndUploadAvatar, useAuth, validateDisplayName } from '@/features/auth';
 import { ConsentCheckbox, TERMS_VERSION } from '@/features/legal';
+import { registerForPush } from '@/features/notifications';
+import { callFunction } from '@/features/payments';
 import { useTheme } from '@/hooks/use-theme';
 
 const BIO_MAX = 150;
@@ -64,6 +66,11 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
           ? { onboarding_completed_at: new Date().toISOString(), accepted_terms_version: TERMS_VERSION, accepted_terms_at: new Date().toISOString() }
           : {}),
       });
+      if (completeOnboarding && user) {
+        // Welcome email (once, server-guarded) and the notification prompt. Neither blocks onboarding.
+        void callFunction('welcome').catch(() => undefined);
+        void registerForPush(user.id).catch(() => undefined);
+      }
       onSaved();
     } catch (error) {
       setFormError(describeAuthError(error));

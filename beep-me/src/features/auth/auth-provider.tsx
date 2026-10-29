@@ -12,6 +12,7 @@ import {
 
 import { useAnalytics } from '@/lib/analytics';
 import { configurePurchases } from '@/lib/purchases';
+import { unregisterPush } from '@/features/notifications';
 import { Sentry } from '@/lib/sentry';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { OwnProfile, TablesUpdate } from '@/types/database';
@@ -129,6 +130,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       plus_expires_at: null,
       accepted_terms_version: null,
       accepted_terms_at: null,
+      welcome_sent_at: null,
       updated_at: '',
     };
     return { ...pub.data, ...privateFields };
@@ -204,6 +206,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   );
 
   const signOut = useCallback(async () => {
+    await unregisterPush();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }, []);

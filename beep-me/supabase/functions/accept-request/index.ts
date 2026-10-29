@@ -3,8 +3,10 @@
 // charge fails.
 import { withSupabase } from 'npm:@supabase/server@1';
 
+import { sendEmail, templates } from '../_shared/email.ts';
 import { quoteBooking } from '../_shared/fees.ts';
 import { guarded, HttpError, json } from '../_shared/http.ts';
+import { pushToUsers } from '../_shared/push.ts';
 import { stripe } from '../_shared/stripe.ts';
 
 type Body = { requestId?: string };
@@ -20,11 +22,11 @@ export default {
 
       const { data: request } = await admin
         .from('seat_requests')
-        .select('id, status, seats_requested, rider_id, beep:beeps!seat_requests_beep_id_fkey(id, driver_id, status, price_per_seat_cents, origin, destination)')
+        .select('id, status, seats_requested, rider_id, beep:beeps!seat_requests_beep_id_fkey(id, driver_id, status, price_per_seat_cents, origin, destination, departure_at)')
         .eq('id', requestId)
         .single();
       if (!request) throw new HttpError(404, 'Request not found');
-      const beep = request.beep as unknown as { id: string; driver_id: string; status: string; price_per_seat_cents: number; origin: string; destination: string };
+      const beep = request.beep as unknown as { id: string; driver_id: string; status: string; price_per_seat_cents: number; origin: string; destination: string; departure_at: string };
       if (beep.driver_id !== driverId) throw new HttpError(403, 'Only the driver can accept this request');
       if (request.status !== 'pending') throw new HttpError(409, 'This request is no longer pending');
       if (beep.status !== 'open') throw new HttpError(409, 'This ride is no longer open');
@@ -116,6 +118,24 @@ export default {
         if (paymentIntentId) await stripe().refunds.create({ payment_intent: paymentIntentId });
         await admin.from('payments').update({ status: 'refunded' }).eq('seat_request_id', request.id);
         throw new HttpError(409, statusError.message);
+      }
+      // Tell the rider (email + push). Failures here never undo the booking.
+      try {
+        const route = `${beep.origin} → ${beep.destination}`;
+        const when = new Date(beep.departure_at).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
+        const amount = `$${(quote.amountCents / 100).toFixed(2)}`;
+        const [{ data: riderProfile }, { data: driverProfile }, { data: riderUser }] = await Promise.all([
+          admin.from('profiles').select('display_name').eq('id', rider.id).single(),
+          admin.from('profiles').select('display_name').eq('id', driverId).single(),
+          admin.auth.admin.getUserById(rider.id),
+        ]);
+        const riderEmail = riderUser?.user?.email;
+        if (riderEmail) {
+          await sendEmail({ to: riderEmail, ...templates.bookingAccepted(riderProfile?.display_name ?? '', driverProfile?.display_name ?? 'Your driver', route, when, request.seats_requested, amount, request.id) });
+        }
+        await pushToUsers(admin, [rider.id], { title: 'Request accepted', body: `${driverProfile?.display_name ?? 'Your driver'} accepted your seat to ${beep.destination}`, data: { url: `beepme://booking/${request.id}` } });
+      } catch (notifyError) {
+        console.error('notify failed', notifyError);
       }
       return json({ ok: true, amountCents: quote.amountCents });
     }),
