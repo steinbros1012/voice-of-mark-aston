@@ -37,6 +37,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     'expo-router',
+    'expo-localization',
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Beep Me uses your photos so you can add a profile picture.',
+        cameraPermission: false,
+      },
+    ],
     [
       'expo-splash-screen',
       {

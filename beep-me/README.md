@@ -36,13 +36,16 @@ beep-me/
 │  │  ├─ user/[id]          Public profile
 │  │  ├─ rate/[bookingId]   Post-ride rating (modal)
 │  │  └─ paywall            Beep Me Plus (modal)
-│  ├─ components/ui/        Shared primitives (Screen, Text, Button, ...)
+│  ├─ components/ui/        Shared primitives (Screen, Text, Button, TextField, Avatar, ...)
 │  ├─ constants/            theme tokens, universities, fee math
+│  ├─ features/             One folder per domain (auth, profile, beeps, ...): hooks + API calls
 │  ├─ hooks/                React hooks
-│  ├─ lib/                  Service clients (env, sentry; supabase etc. later)
-│  └─ types/                Shared TypeScript types (generated DB types later)
+│  ├─ lib/                  Service clients: env, supabase, analytics (PostHog), sentry
+│  └─ types/                database.ts mirrors the SQL schema for the typed Supabase client
+├─ scripts/db-test.sh       Applies migrations + RLS tests to a local Postgres
 └─ supabase/
    ├─ migrations/           SQL migrations with RLS policies
+   ├─ tests/                RLS test suite and the local auth/storage stub
    └─ functions/            Edge Functions + .env.example for their secrets
 ```
 
@@ -106,9 +109,37 @@ Each section lists the keys it produces and where they go.
    supabase link --project-ref <project-ref>
    supabase db push          # applies supabase/migrations/*
    ```
-4. Authentication → Providers → Email: keep email confirmations **on**. Beep Me
-   uses the 6-digit OTP flow for .edu verification (Phase 2).
-5. Authentication → URL Configuration: add `beepme://` to the redirect allow-list.
+4. Authentication → Sign In / Providers → Email: keep **Confirm email** on.
+5. Authentication → Emails → Templates → **Confirm sign up**: Beep Me verifies
+   with a 6-digit code, not a link, so the template body must include the
+   `{{ .Token }}` variable, for example:
+   ```html
+   <h2>Your Beep Me code</h2>
+   <p>Enter this code in the app: <strong>{{ .Token }}</strong></p>
+   ```
+6. Authentication → Hooks → **Before User Created**: enable it with the
+   Postgres function `public.hook_before_user_created` (created by the first
+   migration). It rejects sign-ups whose email domain is not a supported
+   campus, so the .edu rule is enforced server-side, not only in the app.
+7. Authentication → URL Configuration: add `beepme://` to the redirect allow-list.
+
+How verification works: sign-up creates an unconfirmed user; the profile row
+is created by a trigger with `university_id` derived from the email domain and
+`edu_verified = false`. Entering the emailed code calls `verifyOtp` with type
+`signup`, Supabase confirms the address, and a second trigger flips
+`edu_verified` to true. Clients cannot change `edu_verified`, `university_id`
+or the rating/ride counters (a trigger discards those changes).
+
+#### Database tests
+
+`supabase/tests/rls.test.sql` applies every migration to a throwaway local
+Postgres and asserts the Row Level Security policies by impersonating users.
+It uses a small stub of the `auth` and `storage` schemas
+(`supabase/tests/00_supabase_stub.sql`) and never touches a hosted project.
+
+```bash
+PGURL=postgres://postgres:postgres@localhost:5432/postgres scripts/db-test.sh
+```
 
 ### 2. Stripe Connect (ride payments, driver payouts)
 
@@ -178,10 +209,12 @@ The TestFlight submission checklist lands in Phase 6.
 
 ## Build phases
 
-1. **Scaffold** (this commit): Expo project, strict TypeScript, folder structure,
+1. **Scaffold** (done): Expo project, strict TypeScript, folder structure,
    env templates, README, Sentry initialised at startup.
-2. Auth and profiles: Supabase schema + RLS, sign up / log in, .edu
-   verification, university selection, profile.
+2. **Auth and profiles** (done): full Supabase schema with RLS for every table,
+   sign up / log in, .edu code verification, campus derived from the email
+   domain, onboarding and profile editing with avatar upload, PostHog
+   `sign_up` and `verification_completed` events.
 3. Beeps: post, campus feed, search and filters, detail, share.
 4. Requests and messaging: seat requests, accept/decline, seat counts, chat.
 5. Payments and trust: Stripe Connect with the 15% fee, completion, ratings,
