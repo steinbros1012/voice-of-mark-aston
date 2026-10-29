@@ -1,0 +1,190 @@
+# Beep Me
+
+Campus ride marketplace for college students. Drivers post a **Beep** (origin,
+destination, departure time, seats, price per seat); riders on the same campus
+request seats, pay in the app, chat to coordinate pickup, and rate each other
+afterwards. Beep Me keeps a 15% platform fee on each booking. Launch campus: UNCW.
+
+## Stack
+
+| Concern | Service / library | Where it lives |
+| --- | --- | --- |
+| App | React Native + Expo SDK 58, TypeScript strict, Expo Router | `src/` |
+| Database, auth, RLS | Supabase (Postgres) | `supabase/migrations/` |
+| Server-side logic, email | Supabase Edge Functions | `supabase/functions/` |
+| Ride payments and driver payouts | Stripe Connect | Phase 5 |
+| Premium subscription (Beep Me Plus) | RevenueCat | Phase 5 |
+| Product analytics | PostHog | Phase 2 onward |
+| Crash and error tracking | Sentry | `src/lib/sentry.ts` |
+| Transactional email | Resend (called only from an Edge Function) | Phase 6 |
+
+## Project layout
+
+```
+beep-me/
+├─ app.config.ts            Expo config (reads build-time env, no secrets)
+├─ metro.config.js          Expo Metro config wrapped by Sentry for source maps
+├─ eslint.config.js         eslint-config-expo (flat config)
+├─ .env.example             Every client / build-time variable, documented
+├─ src/
+│  ├─ app/                  Expo Router routes (files here are screens)
+│  │  ├─ _layout.tsx        Root stack, theme, Sentry init
+│  │  ├─ (auth)/            welcome, sign-in, sign-up, verify-email, onboarding
+│  │  ├─ (tabs)/            feed (index), search, post, rides, profile
+│  │  ├─ beep/[id]          Beep detail
+│  │  ├─ booking/[id]       Booking detail with chat
+│  │  ├─ user/[id]          Public profile
+│  │  ├─ rate/[bookingId]   Post-ride rating (modal)
+│  │  └─ paywall            Beep Me Plus (modal)
+│  ├─ components/ui/        Shared primitives (Screen, Text, Button, ...)
+│  ├─ constants/            theme tokens, universities, fee math
+│  ├─ hooks/                React hooks
+│  ├─ lib/                  Service clients (env, sentry; supabase etc. later)
+│  └─ types/                Shared TypeScript types (generated DB types later)
+└─ supabase/
+   ├─ migrations/           SQL migrations with RLS policies
+   └─ functions/            Edge Functions + .env.example for their secrets
+```
+
+Routes only render UI; data access goes through `src/lib` and feature hooks so
+screens stay thin and testable.
+
+## Getting started
+
+Requirements: Node 20+, npm, and either the Expo Go app on a phone or an iOS
+Simulator / Android Emulator. Xcode is only needed for local iOS builds.
+
+```bash
+cd beep-me
+npm install
+cp .env.example .env            # fill in the keys you have; blanks are tolerated
+npx expo start                  # press i (iOS), a (Android) or w (web)
+```
+
+Quality gates, run before every commit:
+
+```bash
+npm run typecheck   # tsc --noEmit (strict + noUncheckedIndexedAccess)
+npm run lint        # eslint via expo lint
+npm run doctor      # expo-doctor dependency and config health
+```
+
+Expo Go works until a library with native code is added (Stripe, RevenueCat,
+Sentry's native layer). From then on use a development build:
+
+```bash
+npx expo run:ios            # or run:android, locally
+npx eas-cli@latest build --profile development --platform ios   # in the cloud
+```
+
+### Environment variables
+
+* `.env` is git-ignored. Only `.env.example` is committed.
+* Variables prefixed `EXPO_PUBLIC_` are inlined into the JavaScript bundle and
+  are visible to anyone with the app, so only publishable keys go there.
+* Secrets (Stripe secret key, Resend API key, webhook secrets) belong in
+  `supabase/functions/.env` and are only ever read by Edge Functions.
+* After editing `.env`, fully reload the app (not just fast refresh).
+* `src/lib/env.ts` is the single place the app reads environment variables.
+  Use `env.x` for optional access and `requireEnv('x')` where a service must
+  be configured.
+
+## Service setup
+
+Each section lists the keys it produces and where they go.
+
+### 1. Supabase (database, auth, RLS)
+
+1. Create a project at <https://supabase.com/dashboard> (or restore an
+   existing one). Pick a region close to campus (US East for UNCW).
+2. Project Settings → API: copy the **Project URL** and the **anon / publishable**
+   key into `.env` as `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+3. Install the CLI and link the project so migrations can be applied:
+   ```bash
+   npm i -g supabase
+   supabase login
+   supabase link --project-ref <project-ref>
+   supabase db push          # applies supabase/migrations/*
+   ```
+4. Authentication → Providers → Email: keep email confirmations **on**. Beep Me
+   uses the 6-digit OTP flow for .edu verification (Phase 2).
+5. Authentication → URL Configuration: add `beepme://` to the redirect allow-list.
+
+### 2. Stripe Connect (ride payments, driver payouts)
+
+1. Create a Stripe account at <https://dashboard.stripe.com>. Stay in **test mode**.
+2. Developers → API keys: copy the **publishable key** to `.env` as
+   `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY`, and the **secret key** to
+   `supabase/functions/.env` as `STRIPE_SECRET_KEY`.
+3. Connect → Settings: enable **Express** accounts. Drivers onboard through an
+   Express account link; riders are charged with a destination charge and
+   `application_fee_amount` set to 15% (see `src/constants/fees.ts`).
+4. Developers → Webhooks: add an endpoint pointing at the payments Edge Function
+   (URL printed by `supabase functions deploy` in Phase 5) and copy the signing
+   secret to `STRIPE_WEBHOOK_SECRET`.
+5. Settings → Payment methods → Apple Pay: register the merchant id
+   `merchant.app.beepme.mobile` when you are ready for Apple Pay.
+
+### 3. RevenueCat (Beep Me Plus subscription)
+
+1. Create a project at <https://app.revenuecat.com>.
+2. Add an iOS app (bundle id `app.beepme.mobile`) and an Android app (package
+   `app.beepme.mobile`). Copy each app's **public API key** to `.env` as
+   `EXPO_PUBLIC_REVENUECAT_IOS_KEY` / `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`.
+3. Create the products in App Store Connect and Google Play Console, then in
+   RevenueCat create an entitlement named `plus`, an offering named `default`,
+   and attach monthly and annual packages.
+4. Integrations → Webhooks (optional, Phase 5): point at the RevenueCat Edge
+   Function and set the authorization header value as `REVENUECAT_WEBHOOK_SECRET`.
+
+### 4. PostHog (product analytics)
+
+1. Create a project at <https://us.posthog.com> (or the EU cloud).
+2. Project Settings: copy the **Project API key** to `.env` as
+   `EXPO_PUBLIC_POSTHOG_KEY`. Set `EXPO_PUBLIC_POSTHOG_HOST` to
+   `https://us.i.posthog.com` or `https://eu.i.posthog.com` to match.
+3. Events tracked: `sign_up`, `verification_completed`, `beep_posted`,
+   `beep_viewed`, `seat_requested`, `seat_accepted`, `booking_completed`,
+   `paywall_viewed`, `subscription_started`.
+
+### 5. Sentry (crashes and errors)
+
+1. Create a React Native project at <https://sentry.io>.
+2. Project → Settings → Client Keys: copy the **DSN** to `.env` as
+   `EXPO_PUBLIC_SENTRY_DSN`. Without a DSN the SDK is initialised disabled.
+3. For readable stack traces in release builds, set `SENTRY_ORG`,
+   `SENTRY_PROJECT` and an auth token (`SENTRY_AUTH_TOKEN`, scopes
+   `project:releases` and `org:read`) in `.env` locally and as EAS environment
+   variables for cloud builds. The Expo config plugin uploads source maps.
+
+### 6. Resend (transactional email)
+
+1. Create an account at <https://resend.com>, add and verify your sending
+   domain, and create an API key.
+2. Put `RESEND_API_KEY` and `RESEND_FROM_EMAIL` in `supabase/functions/.env`
+   and push them with `supabase secrets set --env-file supabase/functions/.env`.
+   The key is used only by the email Edge Function and never ships in the app.
+
+### 7. EAS (builds and TestFlight)
+
+```bash
+npm i -g eas-cli
+eas login
+eas init                 # writes the project id; put it in .env as EAS_PROJECT_ID
+eas build --profile development --platform ios
+```
+
+The TestFlight submission checklist lands in Phase 6.
+
+## Build phases
+
+1. **Scaffold** (this commit): Expo project, strict TypeScript, folder structure,
+   env templates, README, Sentry initialised at startup.
+2. Auth and profiles: Supabase schema + RLS, sign up / log in, .edu
+   verification, university selection, profile.
+3. Beeps: post, campus feed, search and filters, detail, share.
+4. Requests and messaging: seat requests, accept/decline, seat counts, chat.
+5. Payments and trust: Stripe Connect with the 15% fee, completion, ratings,
+   reviews, report and block, RevenueCat paywall.
+6. Polish: PostHog verified, Resend emails live, loading/empty/error states,
+   icon and splash, TestFlight checklist.
