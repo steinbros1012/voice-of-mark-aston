@@ -41,7 +41,8 @@ export default {
     else if (event.type === 'CANCELLATION') active = expiresAt ? new Date(expiresAt).getTime() > Date.now() : false;
     if (active === null) return json({ received: true });
 
-    await ctx.supabaseAdmin.from('profiles').update({ plus_active: active, plus_expires_at: expiresAt }).in('id', candidates);
+    await ctx.supabaseAdmin.from('profiles').update({ plus_active: active }).in('id', candidates);
+    await ctx.supabaseAdmin.from('profile_private').update({ plus_expires_at: expiresAt }).in('id', candidates);
     return json({ received: true });
   }),
 };

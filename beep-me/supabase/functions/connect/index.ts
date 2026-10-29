@@ -15,14 +15,10 @@ export default {
       const { action = 'status' } = (await req.json().catch(() => ({}))) as Body;
       const admin = ctx.supabaseAdmin;
 
-      const { data: profile, error } = await admin
-        .from('profiles')
-        .select('id, display_name, stripe_account_id, payouts_enabled')
-        .eq('id', userId)
-        .single();
-      if (error || !profile) throw new HttpError(404, 'Profile not found');
+      const { data: priv, error } = await admin.from('profile_private').select('stripe_account_id, payouts_enabled').eq('id', userId).single();
+      if (error || !priv) throw new HttpError(404, 'Profile not found');
 
-      let accountId: string = profile.stripe_account_id;
+      let accountId: string = priv.stripe_account_id;
       if (!accountId && action === 'onboard') {
         const account = await stripe().accounts.create({
           type: 'express',
@@ -34,7 +30,7 @@ export default {
           metadata: { beepme_user_id: userId },
         });
         accountId = account.id;
-        await admin.from('profiles').update({ stripe_account_id: accountId }).eq('id', userId);
+        await admin.from('profile_private').update({ stripe_account_id: accountId }).eq('id', userId);
       }
 
       if (!accountId) return json({ payoutsEnabled: false, detailsSubmitted: false });
@@ -51,7 +47,7 @@ export default {
 
       const account = await stripe().accounts.retrieve(accountId);
       const payoutsEnabled = Boolean(account.payouts_enabled);
-      await admin.from('profiles').update({ payouts_enabled: payoutsEnabled }).eq('id', userId);
+      await admin.from('profile_private').update({ payouts_enabled: payoutsEnabled }).eq('id', userId);
       return json({ payoutsEnabled, detailsSubmitted: Boolean(account.details_submitted) });
     }),
   ),

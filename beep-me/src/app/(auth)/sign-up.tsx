@@ -79,6 +79,18 @@ export default function SignUpScreen() {
         returnKeyType="send"
       />
       <FormError message={formError} />
+      <Text variant="caption" color="textSecondary">
+        We collect your student email, name, campus, the rides and messages you create, payment tokens handled by Stripe, ratings, and basic device
+        data. By continuing you agree to the{' '}
+        <Text variant="captionStrong" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'terms' } })}>
+          Terms of Service
+        </Text>{' '}
+        and{' '}
+        <Text variant="captionStrong" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'privacy' } })}>
+          Privacy Policy
+        </Text>
+        .
+      </Text>
       <View style={styles.switch}>
         <Text variant="caption" color="textSecondary">
           Already have an account?{' '}

@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
+
+import { SUBSCRIPTION_MANAGEMENT_URL } from '@/app/paywall';
 
 import { Avatar, Button, Card, FormError, ListRow, Screen, Text, VerifiedPill } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
@@ -91,8 +93,11 @@ export default function ProfileScreen() {
           title="Beep Me Plus"
           subtitle={profile.plus_active ? 'Active · premium placement and no booking fees' : 'Premium placement for drivers, no booking fees for riders'}
           onPress={() => router.push('/paywall')}
-          last
+          last={!profile.plus_active}
         />
+        {profile.plus_active ? (
+          <ListRow icon="open-outline" title="Manage or cancel Plus" subtitle="Opens your store subscription settings" onPress={() => void Linking.openURL(SUBSCRIPTION_MANAGEMENT_URL)} last />
+        ) : null}
       </Card>
 
       <Card flush style={styles.rows}>

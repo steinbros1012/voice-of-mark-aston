@@ -57,14 +57,8 @@ export type Database = {
           rides_given: number;
           rides_taken: number;
           onboarding_completed_at: string | null;
-          stripe_customer_id: string | null;
-          has_payment_method: boolean;
-          stripe_account_id: string | null;
-          payouts_enabled: boolean;
           plus_active: boolean;
-          plus_expires_at: string | null;
-          accepted_terms_version: string | null;
-          accepted_terms_at: string | null;
+          deleted_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -80,14 +74,8 @@ export type Database = {
           rides_given?: number;
           rides_taken?: number;
           onboarding_completed_at?: string | null;
-          stripe_customer_id?: string | null;
-          has_payment_method?: boolean;
-          stripe_account_id?: string | null;
-          payouts_enabled?: boolean;
           plus_active?: boolean;
-          plus_expires_at?: string | null;
-          accepted_terms_version?: string | null;
-          accepted_terms_at?: string | null;
+          deleted_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -98,6 +86,40 @@ export type Database = {
             columns: ['university_id'];
             isOneToOne: false;
             referencedRelation: 'universities';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profile_private: {
+        Row: {
+          id: string;
+          stripe_customer_id: string | null;
+          has_payment_method: boolean;
+          stripe_account_id: string | null;
+          payouts_enabled: boolean;
+          plus_expires_at: string | null;
+          accepted_terms_version: string | null;
+          accepted_terms_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          stripe_customer_id?: string | null;
+          has_payment_method?: boolean;
+          stripe_account_id?: string | null;
+          payouts_enabled?: boolean;
+          plus_expires_at?: string | null;
+          accepted_terms_version?: string | null;
+          accepted_terms_at?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['profile_private']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'profile_private_id_fkey';
+            columns: ['id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -428,6 +450,9 @@ export type TablesInsert<T extends keyof Database['public']['Tables']> = Databas
 export type TablesUpdate<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
 
 export type Profile = Tables<'profiles'>;
+export type ProfilePrivate = Tables<'profile_private'>;
+/** The signed-in student's own profile: public row plus their private row. */
+export type OwnProfile = Profile & Omit<ProfilePrivate, 'id' | 'updated_at'>;
 export type University = Tables<'universities'>;
 export type Beep = Tables<'beeps'>;
 export type SeatRequest = Tables<'seat_requests'>;

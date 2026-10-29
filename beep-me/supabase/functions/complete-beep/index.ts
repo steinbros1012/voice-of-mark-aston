@@ -23,7 +23,7 @@ export default {
       if (beep.status !== 'open' && beep.status !== 'full') throw new HttpError(409, 'This ride is already closed');
       if (new Date(beep.departure_at).getTime() > Date.now()) throw new HttpError(409, 'A ride can be completed after its departure time');
 
-      const { data: driver } = await admin.from('profiles').select('stripe_account_id, payouts_enabled').eq('id', userId).single();
+      const { data: driver } = await admin.from('profile_private').select('stripe_account_id, payouts_enabled').eq('id', userId).single();
 
       const { data: payments } = await admin
         .from('payments')

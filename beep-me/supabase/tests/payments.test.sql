@@ -64,7 +64,8 @@ do $$ begin
   exception when insufficient_privilege then null; end;
   assert (select status from public.payments where id = '70000000-0000-0000-0000-000000000001') = 'succeeded', 'rider cannot change payment';
   -- Stripe/Plus columns are server-owned; consent columns are not.
-  update public.profiles set has_payment_method = true, plus_active = true, accepted_terms_version = '2026-10-29', accepted_terms_at = now()
+  update public.profiles set plus_active = true where id = '00000000-0000-0000-0000-000000000202';
+  update public.profile_private set has_payment_method = true, accepted_terms_version = '2026-10-29', accepted_terms_at = now()
   where id = '00000000-0000-0000-0000-000000000202';
 end $$;
 select pg_temp.logout();
@@ -79,9 +80,9 @@ do $$ begin
 end $$;
 select pg_temp.logout();
 do $$ begin
-  assert not (select has_payment_method from public.profiles where id = '00000000-0000-0000-0000-000000000202'), 'has_payment_method protected';
+  assert not (select has_payment_method from public.profile_private where id = '00000000-0000-0000-0000-000000000202'), 'has_payment_method protected';
   assert not (select plus_active from public.profiles where id = '00000000-0000-0000-0000-000000000202'), 'plus_active protected';
-  assert (select accepted_terms_version from public.profiles where id = '00000000-0000-0000-0000-000000000202') = '2026-10-29', 'consent recorded';
+  assert (select accepted_terms_version from public.profile_private where id = '00000000-0000-0000-0000-000000000202') = '2026-10-29', 'consent recorded';
 end $$;
 
 -- Completion counters: service role completes after departure.

@@ -240,6 +240,7 @@ export default function RideDetailScreen() {
             onPress={() => router.push({ pathname: '/report', params: { beepId: beep.id, userId: beep.driver_id } })}
           />
         ) : null}
+        <Button title="Safety help" variant="ghost" icon="shield-checkmark-outline" onPress={() => router.push('/help')} />
       </Screen>
     </>
   );

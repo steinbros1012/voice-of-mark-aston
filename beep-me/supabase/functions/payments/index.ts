@@ -16,14 +16,11 @@ export default {
       const { action = 'setup' } = (await req.json().catch(() => ({}))) as Body;
       const admin = ctx.supabaseAdmin;
 
-      const { data: profile, error } = await admin
-        .from('profiles')
-        .select('id, display_name, stripe_customer_id, has_payment_method')
-        .eq('id', userId)
-        .single();
-      if (error || !profile) throw new HttpError(404, 'Profile not found');
+      const { data: profile, error } = await admin.from('profiles').select('id, display_name').eq('id', userId).single();
+      const { data: priv } = await admin.from('profile_private').select('stripe_customer_id, has_payment_method').eq('id', userId).single();
+      if (error || !profile || !priv) throw new HttpError(404, 'Profile not found');
 
-      let customerId: string = profile.stripe_customer_id;
+      let customerId: string = priv.stripe_customer_id;
       if (!customerId) {
         const customer = await stripe().customers.create({
           name: profile.display_name || undefined,
@@ -31,7 +28,7 @@ export default {
           metadata: { beepme_user_id: userId },
         });
         customerId = customer.id;
-        await admin.from('profiles').update({ stripe_customer_id: customerId }).eq('id', userId);
+        await admin.from('profile_private').update({ stripe_customer_id: customerId }).eq('id', userId);
       }
 
       if (action === 'sync') {
@@ -49,7 +46,7 @@ export default {
             }
           }
         }
-        await admin.from('profiles').update({ has_payment_method: hasMethod }).eq('id', userId);
+        await admin.from('profile_private').update({ has_payment_method: hasMethod }).eq('id', userId);
         return json({ hasPaymentMethod: hasMethod });
       }
 

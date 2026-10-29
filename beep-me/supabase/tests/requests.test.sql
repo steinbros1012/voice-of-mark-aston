@@ -130,7 +130,14 @@ do $$ begin
     raise exception 'seats below booked accepted';
   exception when check_violation then null; end;
 end $$;
-update public.beeps set seats_total = 4, price_per_seat_cents = 2500 where id = '30000000-0000-0000-0000-000000000001';
+-- Price is locked while riders have live requests; seats may still grow.
+do $$ begin
+  begin
+    update public.beeps set price_per_seat_cents = 2500 where id = '30000000-0000-0000-0000-000000000001';
+    raise exception 'price changed with live requests';
+  exception when check_violation then null; end;
+end $$;
+update public.beeps set seats_total = 4 where id = '30000000-0000-0000-0000-000000000001';
 -- Cannot complete before departure.
 do $$ begin
   begin

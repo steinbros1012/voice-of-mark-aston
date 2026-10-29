@@ -73,19 +73,31 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
         ],
       },
       {
-        heading: '9. Community rules and enforcement',
+        heading: '9. Ratings and reviews',
+        paragraphs: [
+          'After a completed ride, each side may rate the other from one to five stars and leave a short review. Ratings are public on profiles, are tied to a real completed booking, and cannot be edited once submitted. Reviews that break the Community Guidelines may be removed. Trading, buying, or coercing ratings is prohibited.',
+        ],
+      },
+      {
+        heading: '10. Prohibited behaviour',
+        paragraphs: [
+          'You may not: use Beep Me under 18 or without a valid student email; create more than one account or share an account; carry passengers for commercial hire; drive without a valid license, registration, or insurance; drive while impaired; harass, threaten, discriminate against, or make unwanted advances toward another student; arrange or settle rides off the platform to avoid fees or protections; post rides you do not intend to drive; scrape, probe, or attack the service; or use the app for anything unlawful.',
+        ],
+      },
+      {
+        heading: '11. Community rules and enforcement',
         paragraphs: [
           'The Community Guidelines are part of these Terms. Beep Me may suspend or remove accounts, rides, or content that break them, and may share information with university or law enforcement authorities where safety or the law requires.',
         ],
       },
       {
-        heading: '10. Disputes and arbitration',
+        heading: '12. Disputes and arbitration',
         paragraphs: [
           'Any dispute with Beep Me will be resolved by binding individual arbitration in New Hanover County, North Carolina, under the rules of the American Arbitration Association, rather than in court, except that either party may bring an individual claim in small-claims court. Class actions are waived to the extent the law allows. North Carolina law governs these Terms.',
         ],
       },
       {
-        heading: '11. Changes',
+        heading: '13. Changes',
         paragraphs: [
           'Beep Me may update these Terms. When the changes are material, you will be asked to accept the new version in the app before continuing to use it.',
         ],
@@ -99,12 +111,16 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
     intro: 'This policy explains what Beep Me collects, why, and who it is shared with.',
     sections: [
       {
-        heading: 'What we collect',
+        heading: 'What we collect, and why',
         paragraphs: [
-          'Account data: your student email, display name, campus, optional photo and bio, and the version of the Terms you accepted.',
-          'Ride data: rides you post or request, seat counts, prices, pickup details you type, messages you send in the app, ratings and reviews, and reports you file.',
-          'Payment data: Stripe stores your card and payout details. Beep Me stores only Stripe identifiers, amounts, and payment status, never card numbers.',
-          'Device and usage data: crash reports (Sentry) and product analytics events such as sign-up, ride posted, and seat requested (PostHog), tied to your account id rather than your email.',
+          'Account information: your university (.edu) email address, display name, campus, optional profile photo and short bio, and the version and time of the Terms you accepted. We use it to verify that you are a student, show other students who you are, and prove consent.',
+          'Ride history: rides you post or request, seat counts, prices, departure times, status changes, and the pickup and destination places you type. These are free-text place names, not GPS tracking; Beep Me does not collect your device location. We use ride history to run the marketplace and resolve disputes.',
+          'Messages: the in-app chat between a rider and a driver about a booking. We use them to make coordination possible and to investigate reports.',
+          'Payment information: cards and bank details are entered directly into Stripe and never reach Beep Me. We store Stripe\u2019s customer and account identifiers, payment amounts, fees, and status so we can charge, refund, and pay out correctly and keep required financial records.',
+          'Ratings and reviews you give and receive, shown on profiles.',
+          'Reports you file and blocks you set, used only for safety review.',
+          'Device and analytics data: app version, device model and OS, crash reports, and product events (for example sign-up, ride posted, seat requested, paywall viewed). Events are tied to a random account id, never to your email, and are used to fix bugs and improve the app.',
+          'Beep Me has no artificial-intelligence features today. If we add any (for example ride suggestions or message assistance), this policy will be updated first to say what the feature does with your data.',
         ],
       },
       {
@@ -117,14 +133,16 @@ export const LEGAL_DOCS: Record<LegalDoc['slug'], LegalDoc> = {
         heading: 'Who sees it',
         paragraphs: [
           'Other verified students on your campus see your display name, photo, bio, rating, and the rides you post. Riders and drivers on the same booking see each other’s messages. Your email address is never shown to other students.',
-          'Service providers that process data for us: Supabase (database and authentication), Stripe (payments), RevenueCat (subscriptions), PostHog (analytics), Sentry (crash reporting), and Resend (email). We do not sell personal data.',
+          'Service providers that process data for us, each under its own privacy terms: Supabase (database, authentication, file storage), Stripe and Stripe Connect (rider payments and driver payouts), RevenueCat (Beep Me Plus subscriptions), PostHog (product analytics), Sentry (crash reporting), and Resend (transactional email). We do not sell personal data and we do not share it with advertisers.',
           'We disclose information when the law requires it or when needed to address a safety concern or a report.',
         ],
       },
       {
-        heading: 'Your choices',
+        heading: 'Retention and deletion',
         paragraphs: [
-          'You can edit your profile at any time and delete your account from Help and safety; deletion removes your profile and content, except records we must keep for payments, disputes, or legal obligations.',
+          'You can edit your profile at any time. Delete your account from Help and safety in the app, or by emailing support@beepme.app. Deletion runs immediately: your name, photo, bio, campus, and login are removed, your messages and chats are deleted, pending requests are cancelled, and your card is removed from Stripe. Within 30 days any backups that still hold the data expire.',
+          'What we keep after deletion, and why: payment and payout records (amounts, dates, Stripe identifiers) attached to an anonymised account id for up to 7 years because tax and payment-network rules require it; and safety reports, because they may be needed to protect other students. Ratings you left for others remain, shown as from a deleted student.',
+          'You must cancel or complete upcoming rides and trips before deleting so nobody is left stranded or unpaid.',
         ],
       },
       {

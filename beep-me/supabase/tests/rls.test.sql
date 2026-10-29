@@ -67,7 +67,7 @@ select pg_temp.login('00000000-0000-0000-0000-00000000000c');
 do $$ begin
   begin
     insert into public.beeps (driver_id, university_id, origin, destination, departure_at, seats_total, price_per_seat_cents)
-    values ('00000000-0000-0000-0000-00000000000c', 'uncw', 'x', 'y', now(), 1, 100);
+    values ('00000000-0000-0000-0000-00000000000c', 'uncw', 'x', 'y', now() + interval '1 day', 1, 100);
     raise exception 'unverified user should not post';
   exception when insufficient_privilege then null; end;
 end $$;
@@ -78,7 +78,7 @@ select pg_temp.login('00000000-0000-0000-0000-00000000000a');
 do $$ begin
   begin
     insert into public.beeps (driver_id, university_id, origin, destination, departure_at, seats_total, price_per_seat_cents)
-    values ('00000000-0000-0000-0000-00000000000b', 'uncw', 'x', 'y', now(), 1, 100);
+    values ('00000000-0000-0000-0000-00000000000b', 'uncw', 'x', 'y', now() + interval '1 day', 1, 100);
     raise exception 'should not post for another driver';
   exception when insufficient_privilege then null; end;
 end $$;

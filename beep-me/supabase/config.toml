@@ -12,3 +12,24 @@ verify_jwt = false
 [functions.connect-return]
 # Browser redirect target after Stripe Connect onboarding; public page.
 verify_jwt = false
+
+[functions.legal]
+# Public legal pages.
+verify_jwt = false
+
+# Auth abuse limits. These apply to local development; set the same values in
+# the dashboard under Authentication → Rate Limits for the hosted project.
+[auth.rate_limit]
+# One-time code emails per hour per project (the app also enforces a 60s resend cooldown).
+email_sent = 30
+# Code verification attempts per 5 minutes per IP.
+token_verifications = 30
+# Sign-in/sign-up calls per 5 minutes per IP.
+sign_in_sign_ups = 30
+# Anonymous (no session) requests per hour per IP.
+anonymous_users = 30
+
+[auth]
+# Codes expire after 10 minutes; a wrong code never reveals whether the email exists.
+otp_expiry = 600
+otp_length = 6

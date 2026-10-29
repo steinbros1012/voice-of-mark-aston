@@ -29,13 +29,11 @@ export default {
       if (request.status !== 'pending') throw new HttpError(409, 'This request is no longer pending');
       if (beep.status !== 'open') throw new HttpError(409, 'This ride is no longer open');
 
-      const { data: driver } = await admin.from('profiles').select('payouts_enabled').eq('id', driverId).single();
-      const { data: rider } = await admin
-        .from('profiles')
-        .select('id, stripe_customer_id, has_payment_method, plus_active')
-        .eq('id', request.rider_id)
-        .single();
-      if (!rider) throw new HttpError(404, 'Rider not found');
+      const { data: driver } = await admin.from('profile_private').select('payouts_enabled').eq('id', driverId).single();
+      const { data: riderPublic } = await admin.from('profiles').select('id, plus_active').eq('id', request.rider_id).single();
+      const { data: riderPrivate } = await admin.from('profile_private').select('stripe_customer_id, has_payment_method').eq('id', request.rider_id).single();
+      if (!riderPublic || !riderPrivate) throw new HttpError(404, 'Rider not found');
+      const rider = { ...riderPublic, ...riderPrivate };
 
       const quote = quoteBooking(request.seats_requested, beep.price_per_seat_cents, Boolean(rider.plus_active));
 

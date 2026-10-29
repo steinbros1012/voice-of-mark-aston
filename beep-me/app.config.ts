@@ -30,6 +30,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/images/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    // No plain-HTTP traffic: Android blocks cleartext by default (targetSdk 28+)
+    // and iOS App Transport Security does the same. Nothing here relaxes that.
   },
   web: {
     output: 'single',

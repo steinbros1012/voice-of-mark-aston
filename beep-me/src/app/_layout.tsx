@@ -75,6 +75,7 @@ function RootNavigator() {
         <Stack.Screen name="report" options={{ title: 'Report', presentation: 'modal' }} />
         <Stack.Screen name="edit-profile" options={{ title: 'Edit profile', presentation: 'modal' }} />
         <Stack.Screen name="help" options={{ title: 'Help & safety' }} />
+        <Stack.Screen name="delete-account" options={{ title: 'Delete account' }} />
         <Stack.Screen name="rate/[bookingId]" options={{ title: 'Rate your ride', presentation: 'modal' }} />
         <Stack.Screen name="paywall" options={{ title: 'Beep Me Plus', presentation: 'modal' }} />
       </Stack.Protected>

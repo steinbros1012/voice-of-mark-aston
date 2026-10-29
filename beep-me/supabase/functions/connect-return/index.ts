@@ -2,6 +2,8 @@
 // straight back into the app via its URL scheme; no account state is passed.
 import { withSupabase } from 'npm:@supabase/server@1';
 
+import { html } from '../_shared/http.ts';
+
 const page = (state: string) => `<!doctype html>
 <html lang="en">
 <head>
@@ -20,6 +22,6 @@ const page = (state: string) => `<!doctype html>
 export default {
   fetch: withSupabase({ auth: 'none' }, (req) => {
     const state = new URL(req.url).searchParams.get('state') === 'done' ? 'done' : 'refresh';
-    return Promise.resolve(new Response(page(state), { headers: { 'content-type': 'text/html; charset=utf-8' } }));
+    return Promise.resolve(html(page(state)));
   }),
 };

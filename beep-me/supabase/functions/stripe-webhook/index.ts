@@ -27,7 +27,7 @@ export default {
         const paymentMethod = typeof intent.payment_method === 'string' ? intent.payment_method : intent.payment_method?.id;
         if (customerId && paymentMethod) {
           await stripe().customers.update(customerId, { invoice_settings: { default_payment_method: paymentMethod } });
-          await admin.from('profiles').update({ has_payment_method: true }).eq('stripe_customer_id', customerId);
+          await admin.from('profile_private').update({ has_payment_method: true }).eq('stripe_customer_id', customerId);
         }
         break;
       }
@@ -36,13 +36,13 @@ export default {
         const customerId = typeof method.customer === 'string' ? method.customer : method.customer?.id;
         if (customerId) {
           const remaining = await stripe().paymentMethods.list({ customer: customerId, type: 'card', limit: 1 });
-          if (remaining.data.length === 0) await admin.from('profiles').update({ has_payment_method: false }).eq('stripe_customer_id', customerId);
+          if (remaining.data.length === 0) await admin.from('profile_private').update({ has_payment_method: false }).eq('stripe_customer_id', customerId);
         }
         break;
       }
       case 'account.updated': {
         const account = event.data.object;
-        await admin.from('profiles').update({ payouts_enabled: Boolean(account.payouts_enabled) }).eq('stripe_account_id', account.id);
+        await admin.from('profile_private').update({ payouts_enabled: Boolean(account.payouts_enabled) }).eq('stripe_account_id', account.id);
         break;
       }
       case 'payment_intent.payment_failed': {

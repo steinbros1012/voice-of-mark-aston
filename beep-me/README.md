@@ -257,6 +257,56 @@ eas build --profile development --platform ios
 
 The TestFlight submission checklist lands in Phase 6.
 
+## Security notes
+
+* Secrets: only `EXPO_PUBLIC_*` values reach the app bundle, and they are all
+  publishable keys. Stripe secret key, webhook secrets, Resend and RevenueCat
+  secrets live in Edge Function secrets (`supabase secrets set`). The service
+  role key is injected by Supabase into functions and never referenced by
+  the app.
+* Sessions: on iOS/Android the Supabase session is AES-encrypted with a key
+  held in the device keychain (`src/lib/session-storage.ts`). Log out clears
+  the session, the analytics identity, the Sentry user and the RevenueCat login.
+* Data access: every table has RLS. Public profile fields live in `profiles`;
+  Stripe identifiers, payout state and consent live in `profile_private`,
+  readable only by the owner and the server. Payments are readable only by
+  the rider and driver and written only by functions. Four SQL test suites
+  (`scripts/db-test.sh`) assert the policies per role.
+* Server-owned fields (ratings, ride counts, verification, campus, Plus
+  state, seats taken, payment amounts) are reset by triggers if a client
+  tries to change them. Prices lock while requests are live; departures must
+  be in the future and within 90 days.
+* Storage: the `avatars` bucket is private and limited to JPEG/PNG/WebP under
+  2 MB; the app stores the object path and shows photos through one-hour
+  signed URLs. Anonymous users cannot read or list it.
+* Auth abuse: passwordless codes are rate limited by Supabase (set the values
+  in `supabase/config.toml` under Authentication → Rate Limits in the
+  dashboard), the app enforces a 60 s resend cooldown, and the Before User
+  Created hook rejects non-campus domains before any email is sent. To add
+  CAPTCHA, enable Turnstile or hCaptcha under Authentication → Attack
+  Protection and pass `captchaToken` to `signInWithOtp`.
+* Every function response carries `X-Content-Type-Options: nosniff`,
+  `Cache-Control: no-store`, HSTS, `X-Frame-Options: DENY` and a strict CSP on
+  HTML pages.
+* `npm audit` findings are in build tooling only (`zod` via `@expo/cli` and
+  the ESLint plugin); nothing vulnerable ships in the app bundle.
+
+## Account deletion and safety review
+
+* Students delete their account from Help and safety. The `delete-account`
+  function removes profile details, photo, messages, blocks and pending
+  requests, detaches the Stripe customer, anonymises the profile and
+  soft-deletes the login. Payment records and safety reports are retained as
+  the Privacy Policy states. Upcoming rides and trips must be settled first.
+* Reports land in the `reports` table with status `open`. Until the Resend
+  alert in Phase 6 is live, review them in the Supabase dashboard (Table
+  Editor → reports, filter status = open) at least daily and set the status
+  to `reviewed`, `actioned` or `dismissed`. Safety emails go to
+  support@beepme.app; the app links there from every ride, trip and chat.
+* Public legal pages: `npm run build:legal` regenerates `web/legal/*.html`
+  (host anywhere) and the `legal` Edge Function serves the same pages at
+  `https://<project-ref>.supabase.co/functions/v1/legal/{terms,privacy,guidelines}`.
+
 ## Legal and consent
 
 `src/features/legal/content.ts` holds the Terms of Service, Privacy Policy and

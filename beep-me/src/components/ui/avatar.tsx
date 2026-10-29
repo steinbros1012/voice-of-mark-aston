@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/hooks/use-theme';
+import { useAvatarUrl } from '@/lib/avatars';
 
 import { Text } from './text';
 
@@ -10,6 +11,7 @@ type AvatarProps = { uri: string | null | undefined; name: string; size?: number
 /** Profile photo with an initials fallback. */
 export function Avatar({ uri, name, size = 48 }: AvatarProps) {
   const theme = useTheme();
+  const resolved = useAvatarUrl(uri);
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
@@ -18,8 +20,8 @@ export function Avatar({ uri, name, size = 48 }: AvatarProps) {
     .join('');
   const shape = { width: size, height: size, borderRadius: size / 2 };
 
-  if (uri) {
-    return <Image source={{ uri }} style={shape} contentFit="cover" accessibilityLabel={`${name}'s photo`} />;
+  if (resolved) {
+    return <Image source={{ uri: resolved }} style={shape} contentFit="cover" accessibilityLabel={`${name}'s photo`} />;
   }
   return (
     <View style={[styles.fallback, shape, { backgroundColor: theme.accentMuted }]}>

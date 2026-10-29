@@ -173,6 +173,10 @@ export default function TripScreen() {
           <Button title="Cancel request" variant="danger" loading={busy} onPress={() => confirmCancel(paid?.status === 'succeeded', () => act(() => paymentsApi.cancelRequest(request.id)))} />
         ) : null}
         <Button title="View ride" variant="ghost" onPress={() => router.push({ pathname: '/beep/[id]', params: { id: request.beep.id } })} />
+        <View style={styles.actions}>
+          <Button title="Report" variant="ghost" fullWidth={false} icon="flag-outline" onPress={() => router.push({ pathname: '/report', params: { beepId: request.beep.id, userId: other.id } })} />
+          <Button title="Safety help" variant="ghost" style={styles.grow} icon="shield-checkmark-outline" onPress={() => router.push('/help')} />
+        </View>
       </Screen>
     </>
   );

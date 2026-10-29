@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Avatar, ErrorState, LoadingState, Notice, RequestStatusPill, Text } from '@/components/ui';
+import { Avatar, ErrorState, IconButton, LoadingState, Notice, RequestStatusPill, Text } from '@/components/ui';
 import { FontSize, MaxContentWidth, Radius, Spacing, TouchTarget } from '@/constants/theme';
 import { describeAuthError, useAuth } from '@/features/auth';
 import { listMessages, sendMessage, subscribeToMessages } from '@/features/messages';
@@ -107,6 +107,7 @@ export default function ChatScreen() {
           headerRight: () => (
             <View style={styles.headerRight}>
               <RequestStatusPill status={detail.status} />
+              <IconButton icon="shield-checkmark-outline" label="Safety help and reporting" variant="bare" onPress={() => router.push('/help')} />
             </View>
           ),
         }}
@@ -169,7 +170,7 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   headerTitle: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, maxWidth: 240 },
-  headerRight: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, paddingHorizontal: Spacing.sm, paddingVertical: Spacing.sm },
   list: { flexGrow: 1, width: '100%', maxWidth: MaxContentWidth, alignSelf: 'center', padding: Spacing.lg, gap: Spacing.sm, justifyContent: 'flex-end' },
   bubbleRow: { flexDirection: 'row' },
   bubbleRowMine: { justifyContent: 'flex-end' },

@@ -14,22 +14,20 @@ import { useAnalytics } from '@/lib/analytics';
 import { configurePurchases } from '@/lib/purchases';
 import { Sentry } from '@/lib/sentry';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import type { Profile, TablesUpdate } from '@/types/database';
+import type { OwnProfile, TablesUpdate } from '@/types/database';
 
 import { TERMS_VERSION } from '@/features/legal/content';
 
 export type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
-type ProfileUpdate = Pick<
-  TablesUpdate<'profiles'>,
-  'display_name' | 'bio' | 'avatar_url' | 'onboarding_completed_at' | 'accepted_terms_version' | 'accepted_terms_at'
->;
+type ProfileUpdate = Pick<TablesUpdate<'profiles'>, 'display_name' | 'bio' | 'avatar_url' | 'onboarding_completed_at'> &
+  Pick<TablesUpdate<'profile_private'>, 'accepted_terms_version' | 'accepted_terms_at'>;
 
 type AuthContextValue = {
   status: AuthStatus;
   session: Session | null;
   user: User | null;
-  profile: Profile | null;
+  profile: OwnProfile | null;
   /** True once the user has finished the onboarding screen. */
   isOnboarded: boolean;
   /** True when the profile has accepted the current Terms version. */
@@ -43,7 +41,7 @@ type AuthContextValue = {
   verifyCode: (input: { email: string; code: string }) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  updateProfile: (changes: ProfileUpdate) => Promise<Profile>;
+  updateProfile: (changes: ProfileUpdate) => Promise<OwnProfile>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -107,18 +105,33 @@ export function describeAuthError(error: unknown): string {
 export function AuthProvider({ children }: PropsWithChildren) {
   const analytics = useAnalytics();
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<OwnProfile | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
   const userId = session?.user.id ?? null;
   const latestUserId = useRef<string | null>(null);
 
-  const loadProfile = useCallback(async (id: string): Promise<Profile | null> => {
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle();
-    if (error) {
-      Sentry.captureException(error);
+  const loadProfile = useCallback(async (id: string): Promise<OwnProfile | null> => {
+    const [pub, priv] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', id).maybeSingle(),
+      supabase.from('profile_private').select('*').eq('id', id).maybeSingle(),
+    ]);
+    if (pub.error || priv.error) {
+      Sentry.captureException(pub.error ?? priv.error);
       return null;
     }
-    return data;
+    if (!pub.data) return null;
+    const { id: _id, updated_at: _updated, ...privateFields } = priv.data ?? {
+      id,
+      stripe_customer_id: null,
+      has_payment_method: false,
+      stripe_account_id: null,
+      payouts_enabled: false,
+      plus_expires_at: null,
+      accepted_terms_version: null,
+      accepted_terms_at: null,
+      updated_at: '',
+    };
+    return { ...pub.data, ...privateFields };
   }, []);
 
   // Bootstrap from the persisted session, then follow auth changes.
@@ -204,12 +217,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const updateProfile = useCallback<AuthContextValue['updateProfile']>(
     async (changes) => {
       if (!userId) throw new AuthFlowError('You are signed out.');
-      const { data, error } = await supabase.from('profiles').update(changes).eq('id', userId).select('*').single();
-      if (error) throw error;
-      setProfile(data);
-      return data;
+      const { accepted_terms_version, accepted_terms_at, ...publicChanges } = changes;
+      if (Object.keys(publicChanges).length) {
+        const { error } = await supabase.from('profiles').update(publicChanges).eq('id', userId);
+        if (error) throw error;
+      }
+      if (accepted_terms_version !== undefined || accepted_terms_at !== undefined) {
+        const { error } = await supabase.from('profile_private').update({ accepted_terms_version, accepted_terms_at }).eq('id', userId);
+        if (error) throw error;
+      }
+      const next = await loadProfile(userId);
+      if (!next) throw new AuthFlowError('Profile could not be reloaded.');
+      setProfile(next);
+      return next;
     },
-    [userId],
+    [userId, loadProfile],
   );
 
   const value = useMemo<AuthContextValue>(

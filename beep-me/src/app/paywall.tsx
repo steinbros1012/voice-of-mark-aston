@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 
 import { Button, Card, Notice, Pill, Screen, Text } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
@@ -9,6 +9,10 @@ import { useAuth } from '@/features/auth';
 import { useTheme } from '@/hooks/use-theme';
 import { useAnalytics } from '@/lib/analytics';
 import { usePlus, type PlusPackage } from '@/lib/purchases';
+
+/** Store subscription management, one tap away, the same place the purchase happens. */
+export const SUBSCRIPTION_MANAGEMENT_URL =
+  Platform.OS === 'ios' ? 'https://apps.apple.com/account/subscriptions' : 'https://play.google.com/store/account/subscriptions';
 
 const PERKS: { icon: keyof typeof Ionicons.glyphMap; title: string; body: string }[] = [
   { icon: 'arrow-up-circle-outline', title: 'Premium placement for drivers', body: 'Your rides lead the feed for the day they depart, with a Plus badge.' },
@@ -51,7 +55,10 @@ export default function PaywallScreen() {
     <Screen
       footer={
         active ? (
-          <Button title="Done" onPress={() => router.back()} />
+          <View style={styles.footerButtons}>
+            <Button title="Manage or cancel subscription" variant="secondary" icon="open-outline" onPress={() => void Linking.openURL(SUBSCRIPTION_MANAGEMENT_URL)} />
+            <Button title="Done" onPress={() => router.back()} />
+          </View>
         ) : (
           <Button
             title={selected ? `Start Plus · ${selected.priceString}` : 'Start Plus'}
@@ -122,9 +129,16 @@ export default function PaywallScreen() {
       {plus.error ? <Notice message={plus.error} /> : null}
 
       <View style={styles.footer}>
+        {!active && selected ? (
+          <Notice
+            message={`${selected.title}: ${selected.priceString} ${selected.period === 'ANNUAL' ? 'per year' : selected.period === 'MONTHLY' ? 'per month' : 'per period'}, charged to your ${Platform.OS === 'ios' ? 'Apple' : 'Google'} account when you confirm. It renews automatically at the same price until you cancel, at least 24 hours before the renewal date. Cancel any time in your store subscription settings; cancelling takes the same one tap as subscribing.`}
+            tone="info"
+          />
+        ) : null}
         {!active && plus.available ? <Button title="Restore purchases" variant="ghost" onPress={() => void plus.restore()} /> : null}
         <Text variant="tiny" color="textMuted" align="center">
-          Subscriptions renew automatically until cancelled in your App Store or Google Play settings. Managed by RevenueCat.
+          Beep Me Plus has no free trial. If one is ever offered, the price, the first charge date, and a reminder before that charge will be shown here first.
+          Subscriptions are managed by RevenueCat through the App Store or Google Play.
         </Text>
       </View>
     </Screen>
@@ -141,4 +155,5 @@ const styles = StyleSheet.create({
   plan: {},
   planRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.md },
   footer: { gap: Spacing.sm },
+  footerButtons: { gap: Spacing.sm },
 });

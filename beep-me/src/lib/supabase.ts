@@ -1,14 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';
 
 import { env } from '@/lib/env';
+import { LargeSecureStore } from '@/lib/session-storage';
 import type { Database } from '@/types/database';
 
 /**
- * Single Supabase client for the app. Sessions persist in AsyncStorage (the
- * storage Supabase recommends for React Native). The anon key is safe to ship:
- * every table is protected by Row Level Security.
+ * Single Supabase client for the app. Sessions persist encrypted on device
+ * (see session-storage.ts). The anon key is safe to ship: every table is
+ * protected by Row Level Security, and the service role key never leaves
+ * the Edge Functions.
  *
  * When the URL or key is missing the client is still created against a
  * placeholder so the app can render; any request then fails with a clear
@@ -21,7 +22,7 @@ export const supabase = createClient<Database>(
   env.supabaseAnonKey ?? 'not-configured',
   {
     auth: {
-      storage: Platform.OS === 'web' ? undefined : AsyncStorage,
+      storage: Platform.OS === 'web' ? undefined : new LargeSecureStore(),
       autoRefreshToken: true,
       persistSession: true,
       // Deep links are handled by Expo Router, not by the auth client.
