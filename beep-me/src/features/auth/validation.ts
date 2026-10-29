@@ -2,8 +2,6 @@ import { findUniversityByEmail } from '@/constants/universities';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const PASSWORD_MIN_LENGTH = 8;
-
 export function validateEmail(email: string): string | null {
   const value = email.trim();
   if (!value) return 'Enter your email.';
@@ -18,11 +16,6 @@ export function validateEduEmail(email: string): string | null {
   if (!findUniversityByEmail(email)) {
     return 'Use your university .edu email. Beep Me is only open at UNCW right now.';
   }
-  return null;
-}
-
-export function validatePassword(password: string): string | null {
-  if (password.length < PASSWORD_MIN_LENGTH) return `Use at least ${PASSWORD_MIN_LENGTH} characters.`;
   return null;
 }
 

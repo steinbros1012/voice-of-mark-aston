@@ -109,10 +109,12 @@ Each section lists the keys it produces and where they go.
    supabase link --project-ref <project-ref>
    supabase db push          # applies supabase/migrations/*
    ```
-4. Authentication → Sign In / Providers → Email: keep **Confirm email** on.
-5. Authentication → Emails → Templates → **Confirm sign up**: Beep Me verifies
-   with a 6-digit code, not a link, so the template body must include the
-   `{{ .Token }}` variable, for example:
+4. Authentication → Sign In / Providers → Email: enable the Email provider.
+   Beep Me is passwordless: students receive a 6-digit code by email for both
+   sign-up and log-in.
+5. Authentication → Emails → Templates: both **Confirm sign up** (first
+   sign-in creates the user) and **Magic Link** (returning users) must include
+   the `{{ .Token }}` variable so the email carries a code rather than a link:
    ```html
    <h2>Your Beep Me code</h2>
    <p>Enter this code in the app: <strong>{{ .Token }}</strong></p>
@@ -123,12 +125,18 @@ Each section lists the keys it produces and where they go.
    campus, so the .edu rule is enforced server-side, not only in the app.
 7. Authentication → URL Configuration: add `beepme://` to the redirect allow-list.
 
-How verification works: sign-up creates an unconfirmed user; the profile row
-is created by a trigger with `university_id` derived from the email domain and
-`edu_verified = false`. Entering the emailed code calls `verifyOtp` with type
-`signup`, Supabase confirms the address, and a second trigger flips
-`edu_verified` to true. Clients cannot change `edu_verified`, `university_id`
-or the rating/ride counters (a trigger discards those changes).
+How verification works: requesting a code calls `signInWithOtp`; the
+Before User Created hook rejects non-campus domains before any row exists.
+The profile row is created by a trigger with `university_id` derived from the
+email domain. Entering the code calls `verifyOtp` with type `email`, Supabase
+confirms the address, and a second trigger flips `edu_verified` to true.
+Clients cannot change `edu_verified`, `university_id` or the rating/ride
+counters (a trigger discards those changes). Verification only proves a campus
+email; the app says so wherever the badge appears, and it is not a background
+check.
+
+Realtime: the second migration adds `messages` and `seat_requests` to the
+`supabase_realtime` publication so chat updates live. Nothing else to enable.
 
 #### Database tests
 
@@ -215,6 +223,20 @@ eas build --profile development --platform ios
 
 The TestFlight submission checklist lands in Phase 6.
 
+## Design system
+
+Light mode follows the Beep Me reference: warm off-white background
+(`#F7F8F4`), white surfaces with subtle borders, deep ink text (`#142522`) and
+a restrained lime accent (`#C6EF68`). Tokens live in `src/constants/theme.ts`
+(colors for light and dark, spacing, radius, type scale, 44pt touch target)
+and every screen is built from `src/components/ui`: `Button` (ink primary,
+lime accent, outlined secondary, ghost, danger), `TextField`, `Chip`,
+`Segmented`, `Stepper`, `Card`, `ListRow`, `Pill` (status and the
+"Student email verified" badge), `Avatar`, `Screen` with a pinned footer,
+`Wordmark`, `ProgressSteps`, and the loading/empty/error states. Navigation is
+four tabs (Explore, Trips, Inbox, Profile) with "Post a ride" reachable from
+Explore and Trips.
+
 ## Build phases
 
 1. **Scaffold** (done): Expo project, strict TypeScript, folder structure,
@@ -228,7 +250,11 @@ The TestFlight submission checklist lands in Phase 6.
    time of day and price, Beep detail with driver card, cancel, and native
    share sheet with a link back into the app. PostHog `beep_posted` and
    `beep_viewed` events.
-4. Requests and messaging: seat requests, accept/decline, seat counts, chat.
+4. **Requests and messaging** (done): request seats, driver accept/decline
+   with capacity checks, rider cancel, seat counts and open/full status kept
+   by triggers, cascade cancellation, per-booking chat with realtime inserts
+   and inbox previews, Trips and Inbox tabs, report and block, public
+   profiles with reviews. PostHog `seat_requested` and `seat_accepted`.
 5. Payments and trust: Stripe Connect with the 15% fee, completion, ratings,
    reviews, report and block, RevenueCat paywall.
 6. Polish: PostHog verified, Resend emails live, loading/empty/error states,

@@ -7,7 +7,7 @@ export default function EditProfileScreen() {
   const router = useRouter();
   return (
     <Screen>
-      <ProfileForm submitLabel="Save" onSaved={() => router.back()} />
+      <ProfileForm submitLabel="Save changes" onSaved={() => router.back()} />
     </Screen>
   );
 }

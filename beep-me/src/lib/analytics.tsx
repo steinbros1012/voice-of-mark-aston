@@ -9,7 +9,7 @@ export type AnalyticsEvents = {
   verification_completed: { university_id: string | null };
   beep_posted: { beep_id: string; price_per_seat_cents: number; seats_total: number };
   beep_viewed: { beep_id: string };
-  seat_requested: { beep_id: string; seats_requested: number };
+  seat_requested: { beep_id: string; seat_request_id: string; seats_requested: number };
   seat_accepted: { beep_id: string; seat_request_id: string };
   booking_completed: { beep_id: string; seat_request_id: string; total_cents: number };
   paywall_viewed: { source: string };

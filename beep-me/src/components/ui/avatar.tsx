@@ -5,14 +5,10 @@ import { useTheme } from '@/hooks/use-theme';
 
 import { Text } from './text';
 
-type AvatarProps = {
-  uri: string | null | undefined;
-  name: string;
-  size?: number;
-};
+type AvatarProps = { uri: string | null | undefined; name: string; size?: number };
 
 /** Profile photo with an initials fallback. */
-export function Avatar({ uri, name, size = 56 }: AvatarProps) {
+export function Avatar({ uri, name, size = 48 }: AvatarProps) {
   const theme = useTheme();
   const initials = name
     .split(/\s+/)
@@ -26,14 +22,12 @@ export function Avatar({ uri, name, size = 56 }: AvatarProps) {
     return <Image source={{ uri }} style={shape} contentFit="cover" accessibilityLabel={`${name}'s photo`} />;
   }
   return (
-    <View style={[styles.fallback, shape, { backgroundColor: theme.surfaceSelected }]}>
-      <Text variant="subheading" color="textSecondary" style={{ fontSize: size * 0.38, lineHeight: size * 0.5 }}>
+    <View style={[styles.fallback, shape, { backgroundColor: theme.accentMuted }]}>
+      <Text variant="bodyStrong" color="text" style={{ fontSize: Math.max(12, size * 0.36), lineHeight: size * 0.5 }}>
         {initials || '?'}
       </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  fallback: { alignItems: 'center', justifyContent: 'center' },
-});
+const styles = StyleSheet.create({ fallback: { alignItems: 'center', justifyContent: 'center' } });

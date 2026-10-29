@@ -16,6 +16,7 @@ export type ReportReason =
   | 'inappropriate_content'
   | 'other';
 export type ReportStatus = 'open' | 'reviewed' | 'actioned' | 'dismissed';
+export type TripType = 'local' | 'long';
 
 export type Database = {
   public: {
@@ -118,6 +119,7 @@ export type Database = {
           price_per_seat_cents: number;
           note: string | null;
           status: BeepStatus;
+          trip_type: TripType;
           created_at: string;
           updated_at: string;
         };
@@ -133,6 +135,7 @@ export type Database = {
           price_per_seat_cents: number;
           note?: string | null;
           status?: BeepStatus;
+          trip_type?: TripType;
           created_at?: string;
           updated_at?: string;
         };
@@ -161,6 +164,8 @@ export type Database = {
           rider_id: string;
           seats_requested: number;
           status: SeatRequestStatus;
+          last_message_at: string | null;
+          last_message_preview: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -170,6 +175,8 @@ export type Database = {
           rider_id: string;
           seats_requested: number;
           status?: SeatRequestStatus;
+          last_message_at?: string | null;
+          last_message_preview?: string | null;
           created_at?: string;
           updated_at?: string;
         };

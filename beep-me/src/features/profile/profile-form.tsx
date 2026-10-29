@@ -1,20 +1,25 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar, Button, FormError, Text, TextField } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
+import { UNIVERSITIES } from '@/constants/universities';
 import { describeAuthError, pickAndUploadAvatar, useAuth, validateDisplayName } from '@/features/auth';
+import { useTheme } from '@/hooks/use-theme';
+
+const BIO_MAX = 150;
 
 type ProfileFormProps = {
   submitLabel: string;
-  /** Called after a successful save. */
   onSaved: () => void;
   /** Marks onboarding complete on save. */
   completeOnboarding?: boolean;
 };
 
-/** Display name, optional bio and photo. Shared by onboarding and edit profile. */
+/** Photo, full name, campus (read-only, from the verified email) and a short bio. */
 export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }: ProfileFormProps) {
+  const theme = useTheme();
   const { user, profile, updateProfile } = useAuth();
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '');
   const [bio, setBio] = useState(profile?.bio ?? '');
@@ -23,6 +28,7 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const campus = UNIVERSITIES.find((u) => u.id === profile?.university_id);
 
   async function choosePhoto() {
     if (!user) return;
@@ -61,44 +67,79 @@ export function ProfileForm({ submitLabel, onSaved, completeOnboarding = false }
 
   return (
     <View style={styles.form}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Choose a profile photo"
-        onPress={choosePhoto}
-        disabled={uploading}
-        style={styles.avatarRow}>
-        <Avatar uri={avatarUrl} name={displayName || 'You'} size={88} />
-        <Text variant="label" color="primary">
-          {uploading ? 'Uploading…' : avatarUrl ? 'Change photo' : 'Add a photo'}
+      <View style={styles.avatarRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={avatarUrl ? 'Change profile photo' : 'Add a profile photo'}
+          onPress={choosePhoto}
+          disabled={uploading}
+          style={styles.avatarPress}>
+          <Avatar uri={avatarUrl} name={displayName || 'You'} size={96} />
+          <View style={[styles.cameraBadge, { backgroundColor: theme.ink, borderColor: theme.background }]}>
+            <Ionicons name="camera" size={14} color={theme.inkText} />
+          </View>
+        </Pressable>
+        <Text variant="caption" color="textSecondary">
+          {uploading ? 'Uploading…' : 'Tap to add a photo'}
         </Text>
-      </Pressable>
+      </View>
+
       <TextField
-        label="Display name"
+        label="Full name"
         value={displayName}
         onChangeText={setDisplayName}
-        placeholder="First name and last initial"
+        placeholder="Ethan Parker"
         autoCapitalize="words"
         textContentType="name"
+        autoComplete="name"
         error={nameError}
         hint="Riders and drivers see this name."
       />
+
+      <View style={styles.field}>
+        <Text variant="label">Campus</Text>
+        <View style={[styles.readonly, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+          <Ionicons name="school-outline" size={18} color={theme.textMuted} />
+          <Text style={styles.readonlyText}>{campus?.name ?? 'Set from your student email'}</Text>
+          <Ionicons name="lock-closed-outline" size={16} color={theme.textMuted} />
+        </View>
+        <Text variant="caption" color="textSecondary">
+          Set from your verified student email.
+        </Text>
+      </View>
+
       <TextField
-        label="About you (optional)"
+        label="Short bio (optional)"
         value={bio}
-        onChangeText={setBio}
-        placeholder="Senior, commuter from Raleigh, big podcast person"
+        onChangeText={(value) => setBio(value.slice(0, BIO_MAX))}
+        placeholder="UNCW junior. Always up for a beach day or a Raleigh trip."
         multiline
-        maxLength={280}
-        style={styles.bio}
+        maxLength={BIO_MAX}
+        counter={`${bio.length}/${BIO_MAX}`}
       />
+
       <FormError message={formError} />
-      <Button title={submitLabel} onPress={save} loading={saving} disabled={uploading} />
+      <Button title={submitLabel} variant="accent" onPress={save} loading={saving} disabled={uploading} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: Spacing.md },
+  form: { gap: Spacing.xl },
   avatarRow: { alignItems: 'center', gap: Spacing.sm },
-  bio: { minHeight: 96, paddingTop: Spacing.sm, textAlignVertical: 'top' },
+  avatarPress: { position: 'relative' },
+  cameraBadge: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 32,
+    height: 32,
+    borderRadius: Radius.pill,
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  field: { gap: Spacing.sm },
+  readonly: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, minHeight: 52, borderWidth: 1, borderRadius: Radius.md, paddingHorizontal: Spacing.lg },
+  readonlyText: { flex: 1 },
 });

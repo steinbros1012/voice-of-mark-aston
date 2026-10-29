@@ -6,3 +6,7 @@ export function useTheme(): Theme {
   const scheme = useColorScheme();
   return scheme === 'dark' ? Colors.dark : Colors.light;
 }
+
+export function useIsDark(): boolean {
+  return useColorScheme() === 'dark';
+}

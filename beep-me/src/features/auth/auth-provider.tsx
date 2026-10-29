@@ -1,4 +1,4 @@
-import type { AuthError, Session, User } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
 import {
   createContext,
   useCallback,
@@ -17,13 +17,6 @@ import type { Profile, TablesUpdate } from '@/types/database';
 
 export type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
-export type SignUpResult =
-  | { kind: 'needsVerification'; email: string }
-  | { kind: 'signedIn' }
-  | { kind: 'alreadyRegistered' };
-
-export type SignInResult = { kind: 'signedIn' } | { kind: 'needsVerification'; email: string };
-
 type ProfileUpdate = Pick<TablesUpdate<'profiles'>, 'display_name' | 'bio' | 'avatar_url' | 'onboarding_completed_at'>;
 
 type AuthContextValue = {
@@ -34,10 +27,12 @@ type AuthContextValue = {
   /** True once the user has finished the onboarding screen. */
   isOnboarded: boolean;
   isConfigured: boolean;
-  signUp: (input: { email: string; password: string; displayName: string }) => Promise<SignUpResult>;
-  signIn: (input: { email: string; password: string }) => Promise<SignInResult>;
-  verifySignUpCode: (input: { email: string; code: string }) => Promise<void>;
-  resendSignUpCode: (email: string) => Promise<void>;
+  /**
+   * Email a 6-digit code. With `createAccount` a new user is created on first
+   * use (sign-up); without it an unknown email is rejected (log-in).
+   */
+  requestCode: (input: { email: string; createAccount: boolean }) => Promise<void>;
+  verifyCode: (input: { email: string; code: string }) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   updateProfile: (changes: ProfileUpdate) => Promise<Profile>;
@@ -64,11 +59,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
   });
 }
 
-/** Supabase reports an unconfirmed email as a sign-in error; map it to a state. */
-function isEmailNotConfirmed(error: AuthError): boolean {
-  return error.code === 'email_not_confirmed' || /not confirmed/i.test(error.message);
-}
-
 export class AuthFlowError extends Error {
   constructor(message: string) {
     super(message);
@@ -76,17 +66,33 @@ export class AuthFlowError extends Error {
   }
 }
 
-/** Turn Supabase auth errors into copy a student can act on. */
+/** Turn Supabase errors into copy a student can act on. */
 export function describeAuthError(error: unknown): string {
   if (error instanceof AuthFlowError) return error.message;
   const message = error instanceof Error ? error.message : String(error);
-  if (/invalid login credentials/i.test(message)) return 'Wrong email or password.';
+  if (/signups not allowed|otp_disabled|user not found/i.test(message)) {
+    return 'No account uses that email yet. Sign up first.';
+  }
   if (/token has expired|otp_expired/i.test(message)) return 'That code has expired. Request a new one.';
-  if (/invalid.*otp|token.*invalid/i.test(message)) return 'That code is not right. Check the email and try again.';
-  if (/rate limit|too many requests|over_email_send_rate_limit/i.test(message)) {
+  if (/invalid.*otp|token.*invalid|invalid.*token/i.test(message)) {
+    return 'That code is not right. Check the email and try again.';
+  }
+  if (/rate limit|too many requests|over_email_send_rate_limit|security purposes/i.test(message)) {
     return 'Too many attempts. Wait a minute and try again.';
   }
-  if (/network request failed|fetch/i.test(message)) return 'No connection. Check your network and try again.';
+  if (/only open at supported campuses|not allowed/i.test(message)) {
+    return 'Use your university .edu email. Beep Me is only open at UNCW right now.';
+  }
+  if (/network request failed|failed to fetch|fetch/i.test(message)) {
+    return 'No connection. Check your network and try again.';
+  }
+  if (/not enough seats/i.test(message)) return 'Not enough seats left on this ride.';
+  if (/no longer taking requests|no longer open/i.test(message)) return 'This ride is no longer open.';
+  if (/already left/i.test(message)) return 'This ride has already left.';
+  if (/duplicate key|unique/i.test(message)) return 'You already have a request on this ride.';
+  if (/row-level security|insufficient_privilege|permission denied/i.test(message)) {
+    return "You don't have permission to do that.";
+  }
   return message || 'Something went wrong. Try again.';
 }
 
@@ -150,56 +156,30 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, [userId, profile?.university_id, analytics]);
 
-  const signUp = useCallback<AuthContextValue['signUp']>(
-    async ({ email, password, displayName }) => {
-      const normalizedEmail = email.trim().toLowerCase();
-      const { data, error } = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password,
-        options: { data: { display_name: displayName.trim() } },
-      });
-      if (error) throw error;
-      // With email confirmation on, Supabase returns a user with no identities
-      // when the address is already registered (to avoid leaking accounts).
-      if (data.user && data.user.identities && data.user.identities.length === 0) {
-        return { kind: 'alreadyRegistered' };
-      }
-      analytics.track('sign_up', { university_id: null });
-      if (data.session) return { kind: 'signedIn' };
-      return { kind: 'needsVerification', email: normalizedEmail };
-    },
-    [analytics],
-  );
-
-  const signIn = useCallback<AuthContextValue['signIn']>(async ({ email, password }) => {
-    const normalizedEmail = email.trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
-    if (error) {
-      if (isEmailNotConfirmed(error)) return { kind: 'needsVerification', email: normalizedEmail };
-      throw error;
-    }
-    return { kind: 'signedIn' };
+  const requestCode = useCallback<AuthContextValue['requestCode']>(async ({ email, createAccount }) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: { shouldCreateUser: createAccount },
+    });
+    if (error) throw error;
   }, []);
 
-  const verifySignUpCode = useCallback<AuthContextValue['verifySignUpCode']>(
+  const verifyCode = useCallback<AuthContextValue['verifyCode']>(
     async ({ email, code }) => {
       const { data, error } = await supabase.auth.verifyOtp({
         email: email.trim().toLowerCase(),
         token: code.trim(),
-        type: 'signup',
+        type: 'email',
       });
       if (error) throw error;
-      if (!data.session) throw new AuthFlowError('Verification did not return a session. Try logging in.');
+      if (!data.session) throw new AuthFlowError('Verification did not return a session. Try again.');
       const verified = await loadProfile(data.session.user.id);
-      analytics.track('verification_completed', { university_id: verified?.university_id ?? null });
+      const universityId = verified?.university_id ?? null;
+      if (verified && !verified.onboarding_completed_at) analytics.track('sign_up', { university_id: universityId });
+      analytics.track('verification_completed', { university_id: universityId });
     },
     [analytics, loadProfile],
   );
-
-  const resendSignUpCode = useCallback<AuthContextValue['resendSignUpCode']>(async (email) => {
-    const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim().toLowerCase() });
-    if (error) throw error;
-  }, []);
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
@@ -231,15 +211,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       profile,
       isOnboarded: Boolean(profile?.onboarding_completed_at),
       isConfigured: isSupabaseConfigured,
-      signUp,
-      signIn,
-      verifySignUpCode,
-      resendSignUpCode,
+      requestCode,
+      verifyCode,
       signOut,
       refreshProfile,
       updateProfile,
     }),
-    [status, session, profile, signUp, signIn, verifySignUpCode, resendSignUpCode, signOut, refreshProfile, updateProfile],
+    [status, session, profile, requestCode, verifyCode, signOut, refreshProfile, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

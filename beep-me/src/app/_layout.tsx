@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Colors, FontSize } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/features/auth';
 import { AnalyticsProvider, useAnalytics } from '@/lib/analytics';
 import { initSentry, Sentry } from '@/lib/sentry';
@@ -18,6 +18,8 @@ function RootNavigator() {
   const { status, isOnboarded } = useAuth();
   const analytics = useAnalytics();
   const pathname = usePathname();
+  const scheme = useColorScheme();
+  const palette = scheme === 'dark' ? Colors.dark : Colors.light;
 
   useEffect(() => {
     if (status !== 'loading') void SplashScreen.hideAsync();
@@ -33,21 +35,36 @@ function RootNavigator() {
   const canUseApp = signedIn && isOnboarded;
 
   return (
-    <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
+    <Stack
+      screenOptions={{
+        headerBackButtonDisplayMode: 'minimal',
+        headerShadowVisible: false,
+        headerStyle: { backgroundColor: palette.background },
+        headerTintColor: palette.text,
+        headerTitleStyle: { fontSize: FontSize.heading, fontWeight: '600', color: palette.text },
+        contentStyle: { backgroundColor: palette.background },
+      }}>
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={signedIn && !isOnboarded}>
-        <Stack.Screen name="onboarding" options={{ title: 'Set up your profile', headerBackVisible: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={canUseApp}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="edit-profile" options={{ title: 'Edit profile', presentation: 'modal' }} />
-        <Stack.Screen name="beep/[id]" options={{ title: 'Beep' }} />
-        <Stack.Screen name="booking/[id]" options={{ title: 'Booking' }} />
+        <Stack.Screen name="search" options={{ title: 'Find a ride' }} />
+        <Stack.Screen name="post" options={{ title: 'Post a ride' }} />
+        <Stack.Screen name="beep/[id]/index" options={{ title: 'Ride details' }} />
+        <Stack.Screen name="beep/[id]/requests" options={{ title: 'Requests' }} />
+        <Stack.Screen name="request/[beepId]" options={{ title: 'Request a seat' }} />
+        <Stack.Screen name="booking/[id]" options={{ title: 'Trip' }} />
+        <Stack.Screen name="chat/[requestId]" options={{ title: 'Chat' }} />
         <Stack.Screen name="user/[id]" options={{ title: 'Profile' }} />
+        <Stack.Screen name="report" options={{ title: 'Report', presentation: 'modal' }} />
+        <Stack.Screen name="edit-profile" options={{ title: 'Edit profile', presentation: 'modal' }} />
+        <Stack.Screen name="help" options={{ title: 'Help & safety' }} />
         <Stack.Screen name="rate/[bookingId]" options={{ title: 'Rate your ride', presentation: 'modal' }} />
         <Stack.Screen name="paywall" options={{ title: 'Beep Me Plus', presentation: 'modal' }} />
       </Stack.Protected>
@@ -67,7 +84,7 @@ function RootLayout() {
         ...navTheme,
         colors: {
           ...navTheme.colors,
-          primary: palette.primary,
+          primary: palette.text,
           background: palette.background,
           card: palette.background,
           text: palette.text,

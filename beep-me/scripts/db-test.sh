@@ -21,4 +21,4 @@ for f in supabase/migrations/*.sql; do
   echo "applying $f"
   psql -q -v ON_ERROR_STOP=1 "$TEST_URL" -f "$f"
 done
-psql -v ON_ERROR_STOP=1 "$TEST_URL" -f supabase/tests/rls.test.sql
+for t in supabase/tests/*.test.sql; do psql -v ON_ERROR_STOP=1 "$TEST_URL" -f "$t"; done

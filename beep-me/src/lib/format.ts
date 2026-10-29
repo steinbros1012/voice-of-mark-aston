@@ -29,6 +29,16 @@ export function formatDeparture(iso: string | Date, now = new Date()): string {
   return `${formatDepartureDay(iso, now)} at ${formatTime(iso)}`;
 }
 
+/** "Jan 2026" */
+export function formatMonthYear(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+}
+
 export function pluralize(count: number, singular: string, plural = `${singular}s`): string {
   return `${count} ${count === 1 ? singular : plural}`;
+}
+
+/** True when the departure time is in the past. Kept out of render bodies for the purity lint. */
+export function hasDeparted(iso: string): boolean {
+  return new Date(iso).getTime() <= Date.now();
 }

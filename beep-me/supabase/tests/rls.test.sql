@@ -87,7 +87,7 @@ select pg_temp.logout();
 -- B (same campus) sees the beep; D (no campus) does not.
 select pg_temp.login('00000000-0000-0000-0000-00000000000b');
 do $$ begin
-  assert (select count(*) from public.beeps) = 1, 'B sees campus beep';
+  assert (select count(*) from public.beeps where id = '10000000-0000-0000-0000-000000000001') = 1, 'B sees campus beep';
 end $$;
 select pg_temp.logout();
 select pg_temp.login('00000000-0000-0000-0000-00000000000d');

@@ -8,9 +8,8 @@ import { describeAuthError, useAuth, validateEmail } from '@/features/auth';
 
 export default function SignInScreen() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { requestCode } = useAuth();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -19,18 +18,11 @@ export default function SignInScreen() {
     const problem = validateEmail(email);
     setEmailError(problem);
     if (problem) return;
-    if (!password) {
-      setFormError('Enter your password.');
-      return;
-    }
-
     setFormError(null);
     setSubmitting(true);
     try {
-      const result = await signIn({ email, password });
-      if (result.kind === 'needsVerification') {
-        router.replace({ pathname: '/verify-email', params: { email: result.email, resend: '1' } });
-      }
+      await requestCode({ email, createAccount: false });
+      router.push({ pathname: '/verify-email', params: { email: email.trim().toLowerCase(), mode: 'login' } });
     } catch (error) {
       setFormError(describeAuthError(error));
     } finally {
@@ -39,12 +31,13 @@ export default function SignInScreen() {
   }
 
   return (
-    <Screen>
+    <Screen footer={<Button title="Send login code" variant="accent" onPress={submit} loading={submitting} />}>
       <View style={styles.intro}>
-        <Text variant="heading">Welcome back</Text>
+        <Text variant="display">Welcome back</Text>
+        <Text color="textSecondary">Enter your student email and we&apos;ll send a one-time login code.</Text>
       </View>
       <TextField
-        label="University email"
+        label="Student email"
         value={email}
         onChangeText={setEmail}
         placeholder="you@uncw.edu"
@@ -52,28 +45,25 @@ export default function SignInScreen() {
         autoCorrect={false}
         keyboardType="email-address"
         textContentType="emailAddress"
+        autoComplete="email"
         error={emailError}
-      />
-      <TextField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        textContentType="password"
         onSubmitEditing={submit}
+        returnKeyType="send"
       />
       <FormError message={formError} />
-      <Button title="Log in" onPress={submit} loading={submitting} />
-      <Link href="/sign-up" style={styles.switch}>
+      <View style={styles.switch}>
         <Text variant="caption" color="textSecondary">
-          New here? <Text variant="label" color="primary">Create an account</Text>
+          New here?{' '}
         </Text>
-      </Link>
+        <Link href="/sign-up" replace>
+          <Text variant="captionStrong">Create an account</Text>
+        </Link>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  intro: { gap: Spacing.xs },
-  switch: { alignSelf: 'center', marginTop: Spacing.sm },
+  intro: { gap: Spacing.sm },
+  switch: { flexDirection: 'row', justifyContent: 'center' },
 });
